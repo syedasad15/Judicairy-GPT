@@ -7,7 +7,7 @@ import os
 from Agents import download_agent
 from utils import intent_classifier 
 from Agents.title_generator import generate_chat_title
-load_dotenv()
+
 st.set_page_config(page_title="PakLaw Judicial Assistant", layout="wide")
 
 # --- Session State Initialization ---
