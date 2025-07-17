@@ -1,10 +1,8 @@
 # utils/gpt_client.py
 import os
 from openai import OpenAI
-from dotenv import load_dotenv
 
-load_dotenv("key.env")
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+client = openai_api_key = st.secrets["api_keys"]["openai"]
 
 def call_gpt4(prompt):
     response = client.chat.completions.create(
