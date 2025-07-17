@@ -1,0 +1,248 @@
+// digraph JudgeSupportStructure {
+//     rankdir=LR;
+//     node [shape=box, style=filled, color=lightgray];
+
+//     Judge [shape=ellipse, style=filled, color=lightblue];
+
+//     subgraph cluster_Clerk {
+//         label="Court Clerk / Reader";
+//         style=dashed;
+//         "Maintain cause list";
+//         "Prepare case files";
+//         "Notify parties";
+//         "Update case registers";
+//         "Present case briefs";
+//         "Manage files";
+//     }
+
+//     subgraph cluster_Steno {
+//         label="Stenographer / PA";
+//         style=dashed;
+//         "Type judgments";
+//         "Format orders";
+//         "Proofread drafts";
+//         "Handle confidential dictations";
+//         "Prepare final copies";
+//     }
+
+//     subgraph cluster_Typist {
+//         label="Typist";
+//         style=dashed;
+//         "Type orders & letters";
+//         "Format documents";
+//         "Print & distribute";
+//     }
+
+//     subgraph cluster_Bench {
+//         label="Bench Assistant";
+//         style=dashed;
+//         "Call out cases";
+//         "Hand over files";
+//         "Mark evidence";
+//         "Ensure courtroom readiness";
+//         "Maintain decorum";
+//     }
+
+//     subgraph cluster_Research {
+//         label="Judicial Assistant / Research Officer";
+//         style=dashed;
+//         "Research case laws";
+//         "Draft legal briefs";
+//         "Track legal updates";
+//         "Prepare legal memos";
+//         "Assist in policy reviews";
+//     }
+
+//     subgraph cluster_Bailiff {
+//         label="Bailiff / Court Orderly";
+//         style=dashed;
+//         "Serve summons/warrants";
+//         "Maintain courtroom order";
+//         "Carry documents";
+//         "Call parties";
+//         "Escort judge/witnesses";
+//     }
+
+//     subgraph cluster_Admin {
+//         label="Registrar / Admin Officer";
+//         style=dashed;
+//         "Manage admin communication";
+//         "Supervise staff";
+//         "Prepare case reports";
+//         "Coordinate judge's calendar";
+//         "Implement higher court directions";
+//     }
+
+//     Judge -> "Court Clerk / Reader";
+//     Judge -> "Stenographer / PA";
+//     Judge -> "Typist";
+//     Judge -> "Bench Assistant";
+//     Judge -> "Judicial Assistant / Research Officer";
+//     Judge -> "Bailiff / Court Orderly";
+//     Judge -> "Registrar / Admin Officer";
+
+//     "Court Clerk / Reader" -> "Maintain cause list";
+//     "Court Clerk / Reader" -> "Prepare case files";
+//     "Court Clerk / Reader" -> "Notify parties";
+//     "Court Clerk / Reader" -> "Update case registers";
+//     "Court Clerk / Reader" -> "Present case briefs";
+//     "Court Clerk / Reader" -> "Manage files";
+
+//     "Stenographer / PA" -> "Type judgments";
+//     "Stenographer / PA" -> "Format orders";
+//     "Stenographer / PA" -> "Proofread drafts";
+//     "Stenographer / PA" -> "Handle confidential dictations";
+//     "Stenographer / PA" -> "Prepare final copies";
+
+//     "Typist" -> "Type orders & letters";
+//     "Typist" -> "Format documents";
+//     "Typist" -> "Print & distribute";
+
+//     "Bench Assistant" -> "Call out cases";
+//     "Bench Assistant" -> "Hand over files";
+//     "Bench Assistant" -> "Mark evidence";
+//     "Bench Assistant" -> "Ensure courtroom readiness";
+//     "Bench Assistant" -> "Maintain decorum";
+
+//     "Judicial Assistant / Research Officer" -> "Research case laws";
+//     "Judicial Assistant / Research Officer" -> "Draft legal briefs";
+//     "Judicial Assistant / Research Officer" -> "Track legal updates";
+//     "Judicial Assistant / Research Officer" -> "Prepare legal memos";
+//     "Judicial Assistant / Research Officer" -> "Assist in policy reviews";
+
+//     "Bailiff / Court Orderly" -> "Serve summons/warrants";
+//     "Bailiff / Court Orderly" -> "Maintain courtroom order";
+//     "Bailiff / Court Orderly" -> "Carry documents";
+//     "Bailiff / Court Orderly" -> "Call parties";
+//     "Bailiff / Court Orderly" -> "Escort judge/witnesses";
+
+//     "Registrar / Admin Officer" -> "Manage admin communication";
+//     "Registrar / Admin Officer" -> "Supervise staff";
+//     "Registrar / Admin Officer" -> "Prepare case reports";
+//     "Registrar / Admin Officer" -> "Coordinate judge's calendar";
+//     "Registrar / Admin Officer" -> "Implement higher court directions";
+// }
+
+
+
+
+digraph JudgeSupportStructure {
+    rankdir=LR;
+    bgcolor="white";
+    node [shape=box, style=filled, fontsize=12, fontname="Arial", height=0.5];
+    edge [color="navy", penwidth=1.5];
+
+    // Central Judge Node
+    Judge [shape=ellipse, fillcolor="lightblue", color="darkblue", fontcolor="black", fontsize=14, label="Judge"];
+
+    // Court Clerk Subgraph
+    subgraph cluster_Clerk {
+        label="Court Clerk";
+        style=dashed;
+        color="gray";
+        fontcolor="black";
+        "Cause List" [fillcolor="lightyellow", label="Manage Cause List"];
+        "Case Files" [fillcolor="lightyellow", label="Prepare Case Files"];
+        "Notify Parties" [fillcolor="lightyellow", label="Notify Parties"];
+        "Case Registers" [fillcolor="lightyellow", label="Update Registers"];
+        "Case Briefs" [fillcolor="lightyellow", label="Present Briefs"];
+    }
+
+    // Stenographer Subgraph
+    subgraph cluster_Steno {
+        label="Stenographer";
+        style=dashed;
+        color="gray";
+        fontcolor="black";
+        "Judgments" [fillcolor="lightgreen", label="Type Judgments"];
+        "Orders" [fillcolor="lightgreen", label="Format Orders"];
+        "Proofread" [fillcolor="lightgreen", label="Proofread Drafts"];
+        "Dictations" [fillcolor="lightgreen", label="Handle Dictations"];
+    }
+
+    // Typist Subgraph
+    subgraph cluster_Typist {
+        label="Typist";
+        style=dashed;
+        color="gray";
+        fontcolor="black";
+        "Type Documents" [fillcolor="lightpink", label="Type Orders/Letters"];
+        "Format Docs" [fillcolor="lightpink", label="Format Documents"];
+        "Distribute" [fillcolor="lightpink", label="Print & Distribute"];
+    }
+
+    // Bench Assistant Subgraph
+    subgraph cluster_Bench {
+        label="Bench Assistant";
+        style=dashed;
+        color="gray";
+        fontcolor="black";
+        "Call Cases" [fillcolor="lightcoral", label="Call Cases"];
+        "Handle Files" [fillcolor="lightcoral", label="Manage Files"];
+        "Evidence" [fillcolor="lightcoral", label="Mark Evidence"];
+        "Court Readiness" [fillcolor="lightcoral", label="Prepare Courtroom"];
+    }
+
+    // Judicial Assistant Subgraph
+    subgraph cluster_Research {
+        label="Judicial Assistant";
+        style=dashed;
+        color="gray";
+        fontcolor="black";
+        "Research Laws" [fillcolor="lightcyan", label="Research Case Laws"];
+        "Legal Briefs" [fillcolor="lightcyan", label="Draft Briefs"];
+        "Legal Updates" [fillcolor="lightcyan", label="Track Updates"];
+        "Memos" [fillcolor="lightcyan", label="Prepare Memos"];
+    }
+
+    // Bailiff Subgraph
+    subgraph cluster_Bailiff {
+        label="Bailiff";
+        style=dashed;
+        color="gray";
+        fontcolor="black";
+        "Serve Summons" [fillcolor="lightsalmon", label="Serve Summons"];
+        "Court Order" [fillcolor="lightsalmon", label="Maintain Order"];
+        "Escort" [fillcolor="lightsalmon", label="Escort Judge/Witnesses"];
+        "Call Parties" [fillcolor="lightsalmon", label="Call Parties"];
+    }
+
+    // Registrar Subgraph
+    subgraph cluster_Admin {
+        label="Registrar";
+        style=dashed;
+        color="gray";
+        fontcolor="black";
+        "Admin Comm" [fillcolor="lavender", label="Manage Communication"];
+        "Supervise" [fillcolor="lavender", label="Supervise Staff"];
+        "Reports" [fillcolor="lavender", label="Prepare Reports"];
+        "Calendar" [fillcolor="lavender", label="Manage Calendar"];
+    }
+
+    // Connections from Judge to Roles
+    Judge -> "Court Clerk" [color="darkblue"];
+    Judge -> "Stenographer" [color="darkblue"];
+    Judge -> "Typist" [color="darkblue"];
+    Judge -> "Bench Assistant" [color="darkblue"];
+    Judge -> "Judicial Assistant" [color="darkblue"];
+    Judge -> "Bailiff" [color="darkblue"];
+    Judge -> "Registrar" [color="darkblue"];
+
+    // Role Nodes (Invisible) to Connect Subgraphs
+    "Court Clerk" [style=invis];
+    "Stenographer" [style=invis];
+    "Typist" [style=invis];
+    "Bench Assistant" [style=invis];
+    "Judicial Assistant" [style=invis];
+    "Bailiff" [style=invis];
+    "Registrar" [style=invis];
+
+    // Connections from Roles to Tasks
+    "Court Clerk" -> {"Cause List", "Case Files", "Notify Parties", "Case Registers", "Case Briefs"} [color="gray"];
+    "Stenographer" -> {"Judgments", "Orders", "Proofread", "Dictations"} [color="gray"];
+    "Typist" -> {"Type Documents", "Format Docs", "Distribute"} [color="gray"];
+    "Bench Assistant" -> {"Call Cases", "Handle Files", "Evidence", "Court Readiness"} [color="gray"];
+    "Judicial Assistant" -> {"Research Laws", "Legal Briefs", "Legal Updates", "Memos"} [color="gray"];
+    "Bailiff" -> {"Serve Summons", "Court Order", "Escort", "Call Parties"} [color="gray"];
+    "Registrar" -> {"Admin Comm", "Supervise", "Reports", "Calendar"} [color="gray"];
+}

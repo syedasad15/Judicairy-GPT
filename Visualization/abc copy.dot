@@ -1,0 +1,301 @@
+// digraph JudgeBotAgenticSystem {
+//     rankdir=LR;
+//     bgcolor="white";
+//     node [shape=box, style=filled, fontsize=12, fontname="Arial", height=0.6];
+//     edge [color="gray", fontname="Arial", fontsize=10];
+
+//     // Central JudgeBot Node
+//     JudgeBot [shape=ellipse, label="JudgeBot\n(Main GPT Agent)", fillcolor="lightblue", color="black", fontsize=14];
+
+//     // LEGAL RESEARCH AGENT
+//     subgraph cluster_LegalResearch {
+//         label="LegalResearchAgent";
+//         style=dashed;
+//         color="blue";
+//         fontcolor="black";
+//         "Find Precedents" [fillcolor="lightyellow"];
+//         "Summarize Laws" [fillcolor="lightyellow"];
+//         "Track Legal Updates" [fillcolor="lightyellow"];
+//         "Answer Legal Queries" [fillcolor="lightyellow"];
+//     }
+
+//     // JUDGMENT COMPOSER AGENT
+//     subgraph cluster_Judgment {
+//         label="JudgmentComposerAgent";
+//         style=dashed;
+//         color="darkgreen";
+//         "Draft Judgment" [fillcolor="lightgreen"];
+//         "Format Orders" [fillcolor="lightgreen"];
+//         "Validate Logic" [fillcolor="lightgreen"];
+//         "Suggest Templates" [fillcolor="lightgreen"];
+//     }
+
+//     // CASE MANAGER AGENT
+//     subgraph cluster_CaseManager {
+//         label="CaseManagerAgent";
+//         style=dashed;
+//         color="darkorange";
+//         "Update Case Status" [fillcolor="moccasin"];
+//         "Retrieve Files" [fillcolor="moccasin"];
+//         "Sync With Registry" [fillcolor="moccasin"];
+//         "Alert Delays" [fillcolor="moccasin"];
+//     }
+
+//     // DOCUMENT AGENT
+//     subgraph cluster_DocAgent {
+//         label="DocumentAgent";
+//         style=dashed;
+//         color="purple";
+//         "Generate PDFs" [fillcolor="thistle"];
+//         "Print Documents" [fillcolor="thistle"];
+//         "Edit Letters" [fillcolor="thistle"];
+//         "Export Orders" [fillcolor="thistle"];
+//     }
+
+//     // COMMUNICATION AGENT
+//     subgraph cluster_Communication {
+//         label="CommunicationAgent";
+//         style=dashed;
+//         color="red";
+//         "Draft Notices" [fillcolor="mistyrose"];
+//         "Send Emails/SMS" [fillcolor="mistyrose"];
+//         "Contact Parties" [fillcolor="mistyrose"];
+//         "Auto-Send Reminders" [fillcolor="mistyrose"];
+//     }
+
+//     // CALENDAR AGENT
+//     subgraph cluster_Calendar {
+//         label="CalendarAgent";
+//         style=dashed;
+//         color="darkslategray";
+//         "Manage Hearing Schedule" [fillcolor="lightcyan"];
+//         "Sync with Staff" [fillcolor="lightcyan"];
+//         "Detect Conflicts" [fillcolor="lightcyan"];
+//         "Daily View" [fillcolor="lightcyan"];
+//     }
+
+//     // ASSISTANT AGENT
+//     subgraph cluster_Assistant {
+//         label="AssistantAgent";
+//         style=dashed;
+//         color="goldenrod";
+//         "Next Case Prompt" [fillcolor="lightgoldenrodyellow"];
+//         "Live Case Queue" [fillcolor="lightgoldenrodyellow"];
+//         "Courtroom Alerts" [fillcolor="lightgoldenrodyellow"];
+//         "Suggest Actions" [fillcolor="lightgoldenrodyellow"];
+//     }
+
+//     // MEMORY AGENT
+//     subgraph cluster_Memory {
+//         label="MemoryAgent";
+//         style=dashed;
+//         color="gray";
+//         "Log Past Judgments" [fillcolor="gainsboro"];
+//         "Sync Notes" [fillcolor="gainsboro"];
+//         "Tag Important Cases" [fillcolor="gainsboro"];
+//         "Retrieve Past Data" [fillcolor="gainsboro"];
+//     }
+
+//     // Connections from JudgeBot to each agent
+//     JudgeBot -> "Find Precedents" [label="Query on case law"];
+//     JudgeBot -> "Draft Judgment" [label="Generate judgment draft"];
+//     JudgeBot -> "Update Case Status" [label="Case ID update"];
+//     JudgeBot -> "Generate PDFs" [label="Export/print docs"];
+//     JudgeBot -> "Draft Notices" [label="Notify parties"];
+//     JudgeBot -> "Manage Hearing Schedule" [label="Calendar query"];
+//     JudgeBot -> "Next Case Prompt" [label="Next case please"];
+//     JudgeBot -> "Log Past Judgments" [label="Store this outcome"];
+
+//     // Optional dotted edges from tasks to agents (clarity)
+//     "Find Precedents" -> LegalResearch [style=invis];
+//     "Draft Judgment" -> JudgmentComposer [style=invis];
+//     "Update Case Status" -> CaseManager [style=invis];
+//     "Generate PDFs" -> DocumentAgent [style=invis];
+//     "Draft Notices" -> CommunicationAgent [style=invis];
+//     "Manage Hearing Schedule" -> CalendarAgent [style=invis];
+//     "Next Case Prompt" -> AssistantAgent [style=invis];
+//     "Log Past Judgments" -> MemoryAgent [style=invis];
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+digraph JudgeSupportAgentic {
+    rankdir=LR;
+    bgcolor="white";
+    node [shape=box, style=filled, fontsize=12, fontname="Arial", height=0.5];
+    edge [color="navy", penwidth=1.5];
+
+    // Central Judge Node
+    Judge [shape=ellipse, fillcolor="lightblue", color="darkblue", fontcolor="black", fontsize=14, label="Judge"];
+
+    // Prompts from Judge (input triggers)
+    "Prompt: Research Laws" [shape=note, fillcolor="white"];
+    "Prompt: Summarize Files" [shape=note, fillcolor="white"];
+    "Prompt: Draft Judgment" [shape=note, fillcolor="white"];
+    "Prompt: Notify Parties" [shape=note, fillcolor="white"];
+    "Prompt: Format Order" [shape=note, fillcolor="white"];
+    "Prompt: Update Cause List" [shape=note, fillcolor="white"];
+    "Prompt: Admin Status" [shape=note, fillcolor="white"];
+    "Prompt: Review Memo" [shape=note, fillcolor="white"];
+    "Prompt: Deliver Summons" [shape=note, fillcolor="white"];
+
+    // ========== Judge Decision Layer ==========
+    subgraph cluster_Judge_Decisions {
+        label="Judicial Oversight & Decisions";
+        style=dashed;
+        color="darkgreen";
+        fontcolor="black";
+
+        "Review Suggestions" [fillcolor="gold", shape=box, label="Review Agent Suggestions"];
+        "Deliberate" [fillcolor="lightgray", shape=box, label="Deliberate Decision"];
+        "Sign Order" [fillcolor="lightgray", shape=box, label="Sign Final Order"];
+        "Override Agent" [fillcolor="lightgray", shape=box, label="Override Agent Output"];
+    }
+
+    Judge -> "Review Suggestions";
+    "Review Suggestions" -> "Deliberate";
+    "Deliberate" -> "Sign Order";
+    "Deliberate" -> "Override Agent";
+
+    // ========== Court Clerk Subgraph ==========
+    subgraph cluster_Clerk {
+        label="Court Clerk";
+        style=dashed;
+        color="gray";
+        fontcolor="black";
+        "Cause List" [fillcolor="lightyellow", label="Manage Cause List"];
+        "Case Files" [fillcolor="lightyellow", label="Prepare Case Files"];
+        "Notify Parties" [fillcolor="lightyellow", label="Notify Parties"];
+        "Case Registers" [fillcolor="lightyellow", label="Update Registers"];
+        "Case Briefs" [fillcolor="lightyellow", label="Present Briefs"];
+    }
+
+    // ========== Stenographer Subgraph ==========
+    subgraph cluster_Steno {
+        label="Stenographer";
+        style=dashed;
+        color="gray";
+        fontcolor="black";
+        "Judgments" [fillcolor="lightgreen", label="Type Judgments"];
+        "Orders" [fillcolor="lightgreen", label="Format Orders"];
+        "Proofread" [fillcolor="lightgreen", label="Proofread Drafts"];
+        "Dictations" [fillcolor="lightgreen", label="Handle Dictations"];
+    }
+
+    // ========== Typist Subgraph ==========
+    subgraph cluster_Typist {
+        label="Typist";
+        style=dashed;
+        color="gray";
+        fontcolor="black";
+        "Type Documents" [fillcolor="lightpink", label="Type Orders/Letters"];
+        "Format Docs" [fillcolor="lightpink", label="Format Documents"];
+        "Distribute" [fillcolor="lightpink", label="Print & Distribute"];
+    }
+
+    // ========== Bench Assistant Subgraph ==========
+    subgraph cluster_Bench {
+        label="Bench Assistant";
+        style=dashed;
+        color="gray";
+        fontcolor="black";
+        "Call Cases" [fillcolor="lightcoral", label="Call Cases"];
+        "Handle Files" [fillcolor="lightcoral", label="Manage Files"];
+        "Evidence" [fillcolor="lightcoral", label="Mark Evidence"];
+        "Court Readiness" [fillcolor="lightcoral", label="Prepare Courtroom"];
+    }
+
+    // ========== Judicial Assistant Subgraph ==========
+    subgraph cluster_Research {
+        label="Judicial Assistant";
+        style=dashed;
+        color="gray";
+        fontcolor="black";
+        "Research Laws" [fillcolor="lightcyan", label="Research Case Laws"];
+        "Legal Briefs" [fillcolor="lightcyan", label="Draft Briefs"];
+        "Legal Updates" [fillcolor="lightcyan", label="Track Updates"];
+        "Memos" [fillcolor="lightcyan", label="Prepare Memos"];
+    }
+
+    // ========== Bailiff Subgraph ==========
+    subgraph cluster_Bailiff {
+        label="Bailiff";
+        style=dashed;
+        color="gray";
+        fontcolor="black";
+        "Serve Summons" [fillcolor="lightsalmon", label="Serve Summons"];
+        "Court Order" [fillcolor="lightsalmon", label="Maintain Order"];
+        "Escort" [fillcolor="lightsalmon", label="Escort Judge/Witnesses"];
+        "Call Parties" [fillcolor="lightsalmon", label="Call Parties"];
+    }
+
+    // ========== Registrar Subgraph ==========
+    subgraph cluster_Admin {
+        label="Registrar";
+        style=dashed;
+        color="gray";
+        fontcolor="black";
+        "Admin Comm" [fillcolor="lavender", label="Manage Communication"];
+        "Supervise" [fillcolor="lavender", label="Supervise Staff"];
+        "Reports" [fillcolor="lavender", label="Prepare Reports"];
+        "Calendar" [fillcolor="lavender", label="Manage Calendar"];
+    }
+
+    // Prompt flows to respective agents
+    "Prompt: Research Laws" -> "Research Laws";
+    "Prompt: Summarize Files" -> "Case Files";
+    "Prompt: Draft Judgment" -> "Judgments";
+    "Prompt: Notify Parties" -> "Notify Parties";
+    "Prompt: Format Order" -> "Format Docs";
+    "Prompt: Update Cause List" -> "Cause List";
+    "Prompt: Admin Status" -> "Reports";
+    "Prompt: Review Memo" -> "Memos";
+    "Prompt: Deliver Summons" -> "Serve Summons";
+
+    // Agents to Review Suggestions
+    "Research Laws" -> "Review Suggestions";
+    "Case Files" -> "Review Suggestions";
+    "Judgments" -> "Review Suggestions";
+    "Notify Parties" -> "Review Suggestions";
+    "Format Docs" -> "Review Suggestions";
+    "Cause List" -> "Review Suggestions";
+    "Reports" -> "Review Suggestions";
+    "Memos" -> "Review Suggestions";
+    "Serve Summons" -> "Review Suggestions";
+
+    // Invisible Role Anchors
+    "Court Clerk" [style=invis];
+    "Stenographer" [style=invis];
+    "Typist" [style=invis];
+    "Bench Assistant" [style=invis];
+    "Judicial Assistant" [style=invis];
+    "Bailiff" [style=invis];
+    "Registrar" [style=invis];
+
+    // Judge to Agent Anchors
+    Judge -> "Court Clerk";
+    Judge -> "Stenographer";
+    Judge -> "Typist";
+    Judge -> "Bench Assistant";
+    Judge -> "Judicial Assistant";
+    Judge -> "Bailiff";
+    Judge -> "Registrar";
+
+    // Agents to Tasks
+    "Court Clerk" -> {"Cause List", "Case Files", "Notify Parties", "Case Registers", "Case Briefs"};
+    "Stenographer" -> {"Judgments", "Orders", "Proofread", "Dictations"};
+    "Typist" -> {"Type Documents", "Format Docs", "Distribute"};
+    "Bench Assistant" -> {"Call Cases", "Handle Files", "Evidence", "Court Readiness"};
+    "Judicial Assistant" -> {"Research Laws", "Legal Briefs", "Legal Updates", "Memos"};
+    "Bailiff" -> {"Serve Summons", "Court Order", "Escort", "Call Parties"};
+    "Registrar" -> {"Admin Comm", "Supervise", "Reports", "Calendar"};
+}

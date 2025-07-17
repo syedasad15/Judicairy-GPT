@@ -1,0 +1,85 @@
+digraph JudgeSupportAgentic_Abstract {
+    rankdir=LR;
+    bgcolor="white";
+    node [shape=box, style=filled, fontsize=12, fontname="Arial", height=0.6];
+    edge [color="navy", penwidth=1.5];
+
+    // Central Node
+    Judge [shape=ellipse, fillcolor="lightblue", fontsize=14, label="Judge"];
+
+    // Prompt Layer (abstracted)
+    subgraph cluster_Prompts {
+        label="Judicial Prompts (Intent)";
+        style=dotted;
+        color="gray";
+        "Research Laws" [shape=note, fillcolor="white"];
+        "Summarize Files" [shape=note, fillcolor="white"];
+        "Draft Judgment" [shape=note, fillcolor="white"];
+        "Notify Parties" [shape=note, fillcolor="white"];
+        "Format Order" [shape=note, fillcolor="white"];
+        "Update Cause List" [shape=note, fillcolor="white"];
+        "Admin Status" [shape=note, fillcolor="white"];
+        "Review Memo" [shape=note, fillcolor="white"];
+        "Deliver Summons" [shape=note, fillcolor="white"];
+    }
+
+    // Role Clusters (abstracted agents)
+    subgraph cluster_AgentRoles {
+        label="Court Support Roles (Agentic)";
+        style=rounded;
+        color="gray";
+        fontcolor="black";
+
+        Clerk [fillcolor="lightyellow", label="Court Clerk"];
+        Stenographer [fillcolor="lightgreen", label="Stenographer"];
+        Typist [fillcolor="lightpink", label="Typist"];
+        BenchAssistant [fillcolor="lightcoral", label="Bench Assistant"];
+        JudicialAssistant [fillcolor="lightcyan", label="Judicial Assistant"];
+        Bailiff [fillcolor="lightsalmon", label="Bailiff"];
+        Registrar [fillcolor="lavender", label="Registrar"];
+    }
+
+    // Review Layer
+    subgraph cluster_JudgeLayer {
+        label="Judicial Oversight";
+        style=dashed;
+        color="darkgreen";
+
+        "Review Outputs" [fillcolor="gold", shape=box];
+        "Deliberate" [fillcolor="lightgray", shape=box];
+        "Sign Order" [fillcolor="lightgray", shape=box];
+        "Override" [fillcolor="lightgray", label="Override Output"];
+    }
+
+    // Prompt to Agent
+    "Research Laws"     -> JudicialAssistant;
+    "Summarize Files"   -> Clerk;
+    "Draft Judgment"    -> Stenographer;
+    "Notify Parties"    -> Clerk;
+    "Format Order"      -> Typist;
+    "Update Cause List" -> Clerk;
+    "Admin Status"      -> Registrar;
+    "Review Memo"       -> JudicialAssistant;
+    "Deliver Summons"   -> Bailiff;
+
+    // Agents to Review Layer
+    Clerk             -> "Review Outputs";
+    Stenographer      -> "Review Outputs";
+    Typist            -> "Review Outputs";
+    BenchAssistant    -> "Review Outputs";
+    JudicialAssistant -> "Review Outputs";
+    Bailiff           -> "Review Outputs";
+    Registrar         -> "Review Outputs";
+
+    // Review Flow
+    Judge -> "Review Outputs";
+    "Review Outputs" -> "Deliberate";
+    "Deliberate" -> "Sign Order";
+    "Deliberate" -> "Override";
+
+    // Optional: Judge initiates prompts (dashed)
+    Judge -> {
+        "Research Laws", "Summarize Files", "Draft Judgment", "Notify Parties",
+        "Format Order", "Update Cause List", "Admin Status", "Review Memo", "Deliver Summons"
+    } [style=dashed];
+}
