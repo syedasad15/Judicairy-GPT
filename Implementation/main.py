@@ -152,12 +152,9 @@ with st.form(key="chat_form", clear_on_submit=True):
                 st.success("✅ Text file loaded successfully.")
 
             elif file_name.endswith(".pdf"):
-                progress_bar = st.progress(0, text="Extracting text from PDF...")
-                with st.spinner("🔍 Running OCR on PDF..."):
-                    pdf_text_parts = ocrapp.extract_all_text(uploaded_file.read(), progress_bar)
-                    extracted_text = ocrapp.strip_html("\n\n".join(pdf_text_parts))
+                with st.spinner("🔍 Extracting text from PDF..."):
+                    extracted_text = extract_pdf_text(uploaded_file.read())
                     st.session_state.uploaded_case_text = extracted_text
-                st.success("✅ PDF processed and text extracted!")
 
             else:
                 st.warning("❌ Only .txt and .pdf files are supported.")
