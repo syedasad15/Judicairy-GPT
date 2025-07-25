@@ -138,21 +138,29 @@ with st.form(key="chat_form", clear_on_submit=True):
             placeholder="Type your legal query here or upload a .txt or .pdf case..."
         )
 
-        uploaded_file = st.file_uploader("📎 Upload Case File (.txt or .pdf)", type=["txt", "pdf"], label_visibility="collapsed")
-        
+        uploaded_file = st.file_uploader(
+            "📎 Upload Case File (.txt or .pdf)",
+            type=["txt", "pdf"],
+            label_visibility="collapsed"
+        )
+
         if uploaded_file:
             file_name = uploaded_file.name.lower()
 
             if file_name.endswith(".txt"):
                 st.session_state.uploaded_case_text = uploaded_file.read().decode("utf-8")
+                st.success("✅ Text file loaded successfully.")
 
             elif file_name.endswith(".pdf"):
                 progress_bar = st.progress(0, text="Extracting text from PDF...")
-                with st.spinner("Running OCR on PDF..."):
+                with st.spinner("🔍 Running OCR on PDF..."):
                     pdf_text_parts = ocrapp.extract_all_text(uploaded_file.read(), progress_bar)
-                extracted_text = ocrapp.strip_html("\n\n".join(pdf_text_parts))
-                st.session_state.uploaded_case_text = extracted_text
+                    extracted_text = ocrapp.strip_html("\n\n".join(pdf_text_parts))
+                    st.session_state.uploaded_case_text = extracted_text
                 st.success("✅ PDF processed and text extracted!")
+
+            else:
+                st.warning("❌ Only .txt and .pdf files are supported.")
 
     with col2:
         submitted = st.form_submit_button("Submit Query")
