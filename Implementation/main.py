@@ -1,12 +1,13 @@
 
 import streamlit as st
 from prompt_router import handle_user_input, generate_title_from_prompt
+from dotenv import load_dotenv
 import uuid
 import os
-from Agents import download_agent
+from Agents import download_agent,ocrapp
 from utils import intent_classifier 
 from Agents.title_generator import generate_chat_title
-
+load_dotenv()
 st.set_page_config(page_title="PakLaw Judicial Assistant", layout="wide")
 
 # --- Session State Initialization ---
@@ -126,7 +127,6 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
 with st.form(key="chat_form", clear_on_submit=True):
     col1, col2 = st.columns([4, 1])
 
@@ -136,16 +136,27 @@ with st.form(key="chat_form", clear_on_submit=True):
             key="user_input",
             label_visibility="collapsed",
             height=100,
-            placeholder="Type your legal query here or upload a .txt case..."
+            placeholder="Type your legal query here or upload a .txt or .pdf case..."
         )
-        uploaded_file = st.file_uploader("📎 Upload Case File (.txt)", type=["txt"], label_visibility="collapsed")
+
+        uploaded_file = st.file_uploader("📎 Upload Case File (.txt or .pdf)", type=["txt", "pdf"], label_visibility="collapsed")
+        
         if uploaded_file:
-            st.session_state.uploaded_case_text = uploaded_file.read().decode("utf-8")
+            file_name = uploaded_file.name.lower()
+
+            if file_name.endswith(".txt"):
+                st.session_state.uploaded_case_text = uploaded_file.read().decode("utf-8")
+
+            elif file_name.endswith(".pdf"):
+                progress_bar = st.progress(0, text="Extracting text from PDF...")
+                with st.spinner("Running OCR on PDF..."):
+                    pdf_text_parts = ocrapp.extract_all_text(uploaded_file.read(), progress_bar)
+                extracted_text = ocrapp.strip_html("\n\n".join(pdf_text_parts))
+                st.session_state.uploaded_case_text = extracted_text
+                st.success("✅ PDF processed and text extracted!")
 
     with col2:
         submitted = st.form_submit_button("Submit Query")
-
-    st.markdown("</div>", unsafe_allow_html=True)
 
 # --- Handle Query ---
 if submitted and (user_input or st.session_state.uploaded_case_text):
