@@ -1,11 +1,13 @@
 
 import streamlit as st
 from prompt_router import handle_user_input, generate_title_from_prompt
+
 import uuid
 import os
 from Agents import download_agent,ocrapp
 from utils import intent_classifier 
 from Agents.title_generator import generate_chat_title
+
 st.set_page_config(page_title="PakLaw Judicial Assistant", layout="wide")
 
 # --- Session State Initialization ---
