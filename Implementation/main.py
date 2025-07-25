@@ -126,6 +126,7 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
 with st.form(key="chat_form", clear_on_submit=True):
     col1, col2 = st.columns([4, 1])
 
@@ -155,6 +156,7 @@ with st.form(key="chat_form", clear_on_submit=True):
                 with st.spinner("🔍 Extracting text from PDF..."):
                     extracted_text = extract_pdf_text(uploaded_file.read())
                     st.session_state.uploaded_case_text = extracted_text
+                st.success("✅ PDF processed and text extracted!")
 
             else:
                 st.warning("❌ Only .txt and .pdf files are supported.")
