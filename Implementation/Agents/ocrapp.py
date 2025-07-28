@@ -3,14 +3,11 @@ from PIL import Image
 import easyocr
 import numpy as np
 import re
+import streamlit as st
 
-# Load OCR reader once
-_reader = None
+@st.cache_resource
 def get_reader():
-    global _reader
-    if _reader is None:
-        _reader = easyocr.Reader(["en"], gpu=False)
-    return _reader
+    return easyocr.Reader(["en"], gpu=False)
 
 def ocr_img(img: Image.Image) -> str:
     reader = get_reader()
@@ -20,19 +17,19 @@ def ocr_img(img: Image.Image) -> str:
 def strip_html(text: str) -> str:
     return re.sub(r"<[^>]*>", "", text)
 
-def extract_pdf_text(pdf_bytes: bytes) -> str:
+def process_pdf_stream(pdf_bytes: bytes):
     doc = fitz.open(stream=pdf_bytes, filetype="pdf")
-    all_parts = []
+    total_pages = len(doc)
 
-    for page in doc:
+    for page_num, page in enumerate(doc, start=1):
         parts = []
 
-        # 1. Extract native text blocks
+        # Extract native text
         blocks = page.get_text("blocks")
-        blocks.sort(key=lambda b: (b[1], b[0]))  # Sort by Y, then X
+        blocks.sort(key=lambda b: (b[1], b[0]))
         parts.extend([b[4] for b in blocks if b[4].strip()])
 
-        # 2. OCR embedded images
+        # OCR images embedded in page
         for img_info in page.get_images(full=True):
             xref = img_info[0]
             pix = fitz.Pixmap(doc, xref)
@@ -45,15 +42,14 @@ def extract_pdf_text(pdf_bytes: bytes) -> str:
             if ocr_text:
                 parts.append(ocr_text)
 
-        # 3. If page still has no text, fallback to full page OCR
+        # Fallback full-page OCR if nothing found
         if not parts:
-            pix = page.get_pixmap(dpi=300)
+            pix = page.get_pixmap(dpi=150)  # Lower DPI to reduce memory
             img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
             fallback_text = ocr_img(img)
             if fallback_text:
                 parts.append(fallback_text)
 
-        all_parts.append("\n".join(parts))
+        yield f"--- Page {page_num} ---\n" + "\n".join(parts)
 
     doc.close()
-    return strip_html("\n\n".join(all_parts))
