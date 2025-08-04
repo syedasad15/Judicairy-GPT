@@ -171,8 +171,8 @@ with st.form(key="chat_form", clear_on_submit=True):
             
                         st.success("✅ PDF processed and text extracted!")
                         st.text_area("📄 Extracted Text", extracted_text, height=400)
-        except Exception as e:
-            st.error(f"❌ Failed to extract text: {e}")
+                    except Exception as e:
+                        st.error(f"❌ Failed to extract text: {e}")
     
             else:
                 st.warning("❌ Only .txt and .pdf files are supported.")
@@ -201,6 +201,7 @@ if submitted and (user_input or st.session_state.uploaded_case_text):
 
 
     st.rerun()
+
 
 
 
