@@ -161,16 +161,16 @@ with st.form(key="chat_form", clear_on_submit=True):
                         pdf_bytes = uploaded_file.read()
             
                         # Optional: DPI slider for user control (you can skip if unnecessary)
-                        dpi = st.slider("🖼️ Image Quality (DPI)", min_value=75, max_value=200, value=100, step=25)
+                        # dpi = st.slider("🖼️ Image Quality (DPI)", min_value=75, max_value=200, value=100, step=25)
             
                         # Extract text using GPT-4o-based OCR
-                        extracted_text = extract_pdf_text_with_gpt4o(pdf_bytes, dpi=dpi)
+                        extracted_text = extract_pdf_text_with_gpt4o(pdf_bytes)
             
                         # Save in session state
                         st.session_state.uploaded_case_text = extracted_text
             
                         st.success("✅ PDF processed and text extracted!")
-                        st.text_area("📄 Extracted Text", extracted_text, height=400)
+                        # st.text_area("📄 Extracted Text", extracted_text, height=400)
                     except Exception as e:
                         st.error(f"❌ Failed to extract text: {e}")
     
@@ -201,6 +201,7 @@ if submitted and (user_input or st.session_state.uploaded_case_text):
 
 
     st.rerun()
+
 
 
 
