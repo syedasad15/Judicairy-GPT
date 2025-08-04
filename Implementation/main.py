@@ -127,7 +127,7 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-# from ocrapp import extract_pdf_text 
+from ocrapp import extract_pdf_text_with_gpt4o 
 
 with st.form(key="chat_form", clear_on_submit=True):
     col1, col2 = st.columns([4, 1])
@@ -158,11 +158,10 @@ with st.form(key="chat_form", clear_on_submit=True):
                 with st.spinner("🔍 Extracting text from PDF using GPT-4o..."):
                     try:
                         pdf_bytes = uploaded_file.read()
-                        extracted_text = extract_pdf_text(pdf_bytes)
+                        # Use your updated GPT-4o-based function
+                        extracted_text = extract_pdf_text_with_gpt4o(pdf_bytes)
                         st.session_state.uploaded_case_text = extracted_text
                         st.success("✅ PDF processed and text extracted!")
-                    except Exception as e:
-                        st.error(f"❌ Failed to extract text: {e}")
 
 
             else:
@@ -192,6 +191,7 @@ if submitted and (user_input or st.session_state.uploaded_case_text):
 
 
     st.rerun()
+
 
 
 
