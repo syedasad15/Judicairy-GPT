@@ -127,7 +127,7 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-from Agents.ocrapp import extract_pdf_text  # updated function
+from Agents.ocrapp import extract_pdf_text 
 
 with st.form(key="chat_form", clear_on_submit=True):
     col1, col2 = st.columns([4, 1])
@@ -154,11 +154,16 @@ with st.form(key="chat_form", clear_on_submit=True):
                 st.session_state.uploaded_case_text = uploaded_file.read().decode("utf-8")
                 st.success("✅ Text file loaded successfully.")
 
-            elif file_name.endswith(".pdf"):
-                with st.spinner("🔍 Extracting text from PDF..."):
-                    extracted_text = extract_pdf_text(uploaded_file.read())
-                    st.session_state.uploaded_case_text = extracted_text
-                st.success("✅ PDF processed and text extracted!")
+            elif file_name.lower().endswith(".pdf"):
+                with st.spinner("🔍 Extracting text from PDF using GPT-4o..."):
+                    try:
+                        pdf_bytes = uploaded_file.read()
+                        extracted_text = extract_pdf_text(pdf_bytes)
+                        st.session_state.uploaded_case_text = extracted_text
+                        st.success("✅ PDF processed and text extracted!")
+                    except Exception as e:
+                        st.error(f"❌ Failed to extract text: {e}")
+
 
             else:
                 st.warning("❌ Only .txt and .pdf files are supported.")
@@ -187,6 +192,7 @@ if submitted and (user_input or st.session_state.uploaded_case_text):
 
 
     st.rerun()
+
 
 
 
