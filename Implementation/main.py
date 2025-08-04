@@ -127,7 +127,7 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-from Agents.ocrapp import extract_pdf_text 
+from ocrapp import extract_pdf_text 
 
 with st.form(key="chat_form", clear_on_submit=True):
     col1, col2 = st.columns([4, 1])
@@ -192,6 +192,7 @@ if submitted and (user_input or st.session_state.uploaded_case_text):
 
 
     st.rerun()
+
 
 
 
