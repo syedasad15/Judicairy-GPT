@@ -162,8 +162,6 @@ with st.form(key="chat_form", clear_on_submit=True):
                         extracted_text = extract_pdf_text_with_gpt4o(pdf_bytes)
                         st.session_state.uploaded_case_text = extracted_text
                         st.success("✅ PDF processed and text extracted!")
-
-
             else:
                 st.warning("❌ Only .txt and .pdf files are supported.")
 
@@ -191,6 +189,7 @@ if submitted and (user_input or st.session_state.uploaded_case_text):
 
 
     st.rerun()
+
 
 
 
