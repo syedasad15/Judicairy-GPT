@@ -4,7 +4,7 @@ from io import BytesIO
 import base64
 import time
 import streamlit as st
-openai.api_key = st.secrets["openai_api_key"]
+openai_api_key = st.secrets["api_keys"]["openai"]
 
 
 def image_to_base64(img):
@@ -52,3 +52,4 @@ def extract_pdf_text_with_gpt4o(pdf_bytes):
             all_text.append(f"[Error on page {i + 1}]: {e}")
 
     return "\n\n".join(all_text)
+
