@@ -1,59 +1,54 @@
-import fitz  # PyMuPDF
-from PIL import Image
-import easyocr
-import numpy as np
-import re
+import openai
+from pdf2image import convert_from_bytes
+from io import BytesIO
+import base64
+import time
+import streamlit as st
+openai.api_key = st.secrets["openai_api_key"]
 
-# Load OCR reader once
-_reader = None
-def get_reader():
-    global _reader
-    if _reader is None:
-        _reader = easyocr.Reader(["en"], gpu=False)
-    return _reader
 
-def ocr_img(img: Image.Image) -> str:
-    reader = get_reader()
-    results = reader.readtext(np.array(img), detail=0)
-    return " ".join(results)
+def image_to_base64(img):
+    buf = BytesIO()
+    img.save(buf, format="PNG")
+    return base64.b64encode(buf.getvalue()).decode("utf-8")
 
-def strip_html(text: str) -> str:
-    return re.sub(r"<[^>]*>", "", text)
+def extract_text_with_gpt4o(image):
+    base64_image = image_to_base64(image)
 
-def extract_pdf_text(pdf_bytes: bytes) -> str:
-    doc = fitz.open(stream=pdf_bytes, filetype="pdf")
-    all_parts = []
+    response = openai.ChatCompletion.create(
+        model="gpt-4o",
+        messages=[
+            {
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": "Extract all readable text from this image."},
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": f"data:image/png;base64,{base64_image}",
+                            "detail": "high"
+                        },
+                    },
+                ],
+            }
+        ],
+        max_tokens=2000,
+        temperature=0,
+    )
 
-    for page in doc:
-        parts = []
+    return response["choices"][0]["message"]["content"]
 
-        # 1. Extract native text blocks
-        blocks = page.get_text("blocks")
-        blocks.sort(key=lambda b: (b[1], b[0]))  # Sort by Y, then X
-        parts.extend([b[4] for b in blocks if b[4].strip()])
+def extract_pdf_text_with_gpt4o(pdf_bytes):
+    images = convert_from_bytes(pdf_bytes, dpi=150)
+    all_text = []
 
-        # 2. OCR embedded images
-        for img_info in page.get_images(full=True):
-            xref = img_info[0]
-            pix = fitz.Pixmap(doc, xref)
-            if pix.n - pix.alpha < 4:
-                img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
-            else:
-                pix = fitz.Pixmap(fitz.csRGB, pix)
-                img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
-            ocr_text = ocr_img(img)
-            if ocr_text:
-                parts.append(ocr_text)
+    for i, img in enumerate(images):
+        print(f"Processing page {i + 1}...")
+        try:
+            page_text = extract_text_with_gpt4o(img)
+            all_text.append(page_text)
+            time.sleep(1.1)  # to stay well within rate limits
+        except Exception as e:
+            all_text.append(f"[Error on page {i + 1}]: {e}")
 
-        # 3. If page still has no text, fallback to full page OCR
-        if not parts:
-            pix = page.get_pixmap(dpi=300)
-            img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
-            fallback_text = ocr_img(img)
-            if fallback_text:
-                parts.append(fallback_text)
-
-        all_parts.append("\n".join(parts))
-
-    doc.close()
-    return strip_html("\n\n".join(all_parts))
+    return "\n\n".join(all_text)
