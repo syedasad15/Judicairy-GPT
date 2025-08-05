@@ -187,5 +187,6 @@ if submitted and (user_input or st.session_state.uploaded_case_text):
 
     title = generate_chat_title(query)
     st.session_state.chat_titles[chat_id] = title if title else "Untitled Case"
-
+    st.session_state.uploaded_case_text = ""
     st.rerun()
+
