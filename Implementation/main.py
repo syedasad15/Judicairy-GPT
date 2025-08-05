@@ -9,6 +9,7 @@ from Agents.title_generator import generate_chat_title
 from Agents.ocrapp import extract_pdf_text_with_vision
 import hashlib
 
+# --- Page Setup ---
 st.set_page_config(page_title="PakLaw Judicial Assistant", layout="wide")
 
 # --- Session State Initialization ---
@@ -43,11 +44,11 @@ for cid in st.session_state.chats:
     if st.sidebar.button(title, key=cid):
         st.session_state.current_chat = cid
 
-# --- Title ---
+# --- Title and Description ---
 st.title("⚖️ PakLaw Judicial Assistant")
 st.markdown("This assistant provides support for tasks within Pakistan's judicial system.")
 
-# --- Top Section: Display Chat History with HTML Styling ---
+# --- Chat History Display ---
 def format_response_to_html(text):
     import re
     text = re.sub(r"(?m)^([A-Z][a-z]+):", r"<strong>\1:</strong>", text)
@@ -86,7 +87,7 @@ with st.container():
             )
             download_agent.show_download_if_applicable(idx, current_chat, intent_classifier.classify_prompt_intent)
 
-# --- Sticky Input Box at Bottom ---
+# --- Sticky Chat Input Style ---
 st.markdown(
     """
     <style>
@@ -127,6 +128,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+# --- Input Form ---
 with st.form(key="chat_form", clear_on_submit=True):
     col1, col2 = st.columns([4, 1])
 
@@ -148,22 +150,27 @@ with st.form(key="chat_form", clear_on_submit=True):
         if uploaded_file:
             file_name = uploaded_file.name.lower()
             file_bytes = uploaded_file.read()
-            file_hash = hashlib.md5(file_bytes).hexdigest()
 
-            if st.session_state.last_uploaded_file_hash != file_hash:
-                st.session_state.last_uploaded_file_hash = file_hash
+            max_file_size_mb = 10
+            if len(file_bytes) > max_file_size_mb * 1024 * 1024:
+                st.error(f"❌ File is too large. Maximum allowed size is {max_file_size_mb} MB.")
+            else:
+                file_hash = hashlib.md5(file_bytes).hexdigest()
 
-                if file_name.endswith(".txt"):
-                    st.session_state.uploaded_case_text = file_bytes.decode("utf-8")
-                    st.success("✅ Text file loaded successfully.")
+                if st.session_state.last_uploaded_file_hash != file_hash:
+                    st.session_state.last_uploaded_file_hash = file_hash
 
-                elif file_name.endswith(".pdf"):
-                    try:
-                        extracted_text = extract_pdf_text_with_vision(file_bytes)
-                        st.session_state.uploaded_case_text = extracted_text
-                        st.success("✅ PDF processed and text extracted!")
-                    except Exception as e:
-                        st.error(f"❌ Failed to extract text: {e}")
+                    if file_name.endswith(".txt"):
+                        st.session_state.uploaded_case_text = file_bytes.decode("utf-8")
+                        st.success("✅ Text file loaded successfully.")
+
+                    elif file_name.endswith(".pdf"):
+                        try:
+                            extracted_text = extract_pdf_text_with_vision(file_bytes)
+                            st.session_state.uploaded_case_text = extracted_text
+                            st.success("✅ PDF processed and text extracted!")
+                        except Exception as e:
+                            st.error(f"❌ Failed to extract text: {e}")
 
     with col2:
         submitted = st.form_submit_button("Submit Query")
@@ -178,13 +185,21 @@ if submitted and (user_input or st.session_state.uploaded_case_text):
     chat_id = st.session_state.current_chat
 
     if uploaded_file:
-        st.session_state.chats[chat_id].append({"role": "user", "message": f"[📎 Uploaded Case File: {uploaded_file.name}]"})
+        st.session_state.chats[chat_id].append({
+            "role": "user",
+            "message": f"[📎 Uploaded Case File: {uploaded_file.name}]"
+        })
 
-    st.session_state.chats[chat_id].append({"role": "user", "message": query})
-    st.session_state.chats[chat_id].append({"role": "assistant", "message": response})
+    st.session_state.chats[chat_id].append({
+        "role": "user",
+        "message": query
+    })
+
+    st.session_state.chats[chat_id].append({
+        "role": "assistant",
+        "message": response
+    })
 
     title = generate_chat_title(query)
     st.session_state.chat_titles[chat_id] = title if title else "Untitled Case"
-    # st.session_state.uploaded_case_text = ""
     st.rerun()
-
