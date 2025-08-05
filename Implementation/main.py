@@ -150,6 +150,7 @@ with st.form(key="chat_form", clear_on_submit=True):
             file_bytes = uploaded_file.read()
             file_hash = hashlib.md5(file_bytes).hexdigest()
 
+            # Process file only if new or re-uploaded
             if st.session_state.last_uploaded_file_hash != file_hash:
                 st.session_state.last_uploaded_file_hash = file_hash
 
@@ -164,8 +165,7 @@ with st.form(key="chat_form", clear_on_submit=True):
                         st.success("✅ PDF processed and text extracted!")
                     except Exception as e:
                         st.error(f"❌ Failed to extract text: {e}")
-            else:
-                st.info("ℹ️ Using previously extracted text.")
+            # No need to show "ℹ️ Using..." because the text will be cleared anyway
 
     with col2:
         submitted = st.form_submit_button("Submit Query")
@@ -185,8 +185,10 @@ if submitted and (user_input or st.session_state.uploaded_case_text):
     st.session_state.chats[chat_id].append({"role": "user", "message": query})
     st.session_state.chats[chat_id].append({"role": "assistant", "message": response})
 
+    # Generate title and clear extracted text and hash
     title = generate_chat_title(query)
     st.session_state.chat_titles[chat_id] = title if title else "Untitled Case"
     st.session_state.uploaded_case_text = ""
-    st.rerun()
+    st.session_state.last_uploaded_file_hash = None
 
+    st.rerun()
