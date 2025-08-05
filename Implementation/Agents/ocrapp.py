@@ -94,7 +94,7 @@ def extract_text_with_vision(image: Image.Image) -> str:
     image_bytes = buf.getvalue()
 
     image_vision = vision.Image(content=image_bytes)
-    response = vision_client.text_detection(image=image_vision)
+    response = client.text_detection(image=image_vision)
 
     if response.error.message:
         raise Exception(f"Vision API error: {response.error.message}")
@@ -118,6 +118,7 @@ def extract_pdf_text_with_vision(pdf_bytes) -> str:
                 st.error(error_msg)
 
     return "\n\n".join(all_text)
+
 
 
 
