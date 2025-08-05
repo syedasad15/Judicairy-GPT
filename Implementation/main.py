@@ -7,7 +7,13 @@ import os
 from Agents import download_agent
 from utils import intent_classifier 
 from Agents.title_generator import generate_chat_title
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = st.secrets["google_cloud"]["credentials_path"]
+
+# 🔐 Write the JSON credentials from secrets to a temp file
+with open("gcloud_key.json", "w") as f:
+    f.write(st.secrets["google_cloud"]["credentials"])
+
+# 🌐 Set the environment variable for Google Cloud
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "gcloud_key.json"
 
 st.set_page_config(page_title="PakLaw Judicial Assistant", layout="wide")
 
@@ -202,6 +208,7 @@ if submitted and (user_input or st.session_state.uploaded_case_text):
 
 
     st.rerun()
+
 
 
 
