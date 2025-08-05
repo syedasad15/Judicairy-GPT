@@ -4,8 +4,10 @@ from prompt_router import handle_user_input, generate_title_from_prompt
 import uuid
 import os
 from Agents import download_agent
-from utils import intent_classifier 
+from utils import intent_classifier
 from Agents.title_generator import generate_chat_title
+from Agents.ocrapp import extract_pdf_text_with_vision
+import hashlib
 
 st.set_page_config(page_title="PakLaw Judicial Assistant", layout="wide")
 
@@ -23,6 +25,8 @@ if "user_input" not in st.session_state:
     st.session_state.user_input = ""
 if "uploaded_case_text" not in st.session_state:
     st.session_state.uploaded_case_text = ""
+if "last_uploaded_file_hash" not in st.session_state:
+    st.session_state.last_uploaded_file_hash = None
 
 # --- Sidebar Chat Management ---
 st.sidebar.title("💬 Case Files")
@@ -32,6 +36,7 @@ if st.sidebar.button("➕ New Case"):
     st.session_state.chats[chat_id] = []
     st.session_state.chat_titles[chat_id] = "New Case"
     st.session_state.uploaded_case_text = ""
+    st.session_state.last_uploaded_file_hash = None
 
 for cid in st.session_state.chats:
     title = st.session_state.chat_titles.get(cid, f"Case {cid[:8]}")
@@ -65,7 +70,6 @@ with st.container():
                 </div>
                 """,
                 unsafe_allow_html=True
-                
             )
 
         elif msg["role"] == "assistant":
@@ -80,11 +84,7 @@ with st.container():
                 """,
                 unsafe_allow_html=True
             )
-
-            # 🧠 Show download button only for matching prompts
-            print(f"[DEBUG] Calling show_download_if_applicable for idx={idx}")  # Debug
             download_agent.show_download_if_applicable(idx, current_chat, intent_classifier.classify_prompt_intent)
-
 
 # --- Sticky Input Box at Bottom ---
 st.markdown(
@@ -126,8 +126,6 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-from Agents.ocrapp import extract_pdf_text_with_vision
-
 
 with st.form(key="chat_form", clear_on_submit=True):
     col1, col2 = st.columns([4, 1])
@@ -149,31 +147,25 @@ with st.form(key="chat_form", clear_on_submit=True):
 
         if uploaded_file:
             file_name = uploaded_file.name.lower()
+            file_bytes = uploaded_file.read()
+            file_hash = hashlib.md5(file_bytes).hexdigest()
 
-            if file_name.endswith(".txt"):
-                st.session_state.uploaded_case_text = uploaded_file.read().decode("utf-8")
-                st.success("✅ Text file loaded successfully.")
+            if st.session_state.last_uploaded_file_hash != file_hash:
+                st.session_state.last_uploaded_file_hash = file_hash
 
-            elif file_name.lower().endswith(".pdf"):
+                if file_name.endswith(".txt"):
+                    st.session_state.uploaded_case_text = file_bytes.decode("utf-8")
+                    st.success("✅ Text file loaded successfully.")
+
+                elif file_name.endswith(".pdf"):
                     try:
-                        pdf_bytes = uploaded_file.read()
-            
-                        # Optional: DPI slider for user control (you can skip if unnecessary)
-                        # dpi = st.slider("🖼️ Image Quality (DPI)", min_value=75, max_value=200, value=100, step=25)
-            
-                        # Extract text using GPT-4o-based OCR
-                        extracted_text = extract_pdf_text_with_vision(pdf_bytes)
-            
-                        # Save in session state
+                        extracted_text = extract_pdf_text_with_vision(file_bytes)
                         st.session_state.uploaded_case_text = extracted_text
-            
                         st.success("✅ PDF processed and text extracted!")
-                        # st.text_area("📄 Extracted Text", extracted_text, height=400)
                     except Exception as e:
                         st.error(f"❌ Failed to extract text: {e}")
-    
             else:
-                st.warning("❌ Only .txt and .pdf files are supported.")
+                st.info("ℹ️ Using previously extracted text.")
 
     with col2:
         submitted = st.form_submit_button("Submit Query")
@@ -186,19 +178,14 @@ if submitted and (user_input or st.session_state.uploaded_case_text):
         response = handle_user_input(query)
 
     chat_id = st.session_state.current_chat
+
     if uploaded_file:
         st.session_state.chats[chat_id].append({"role": "user", "message": f"[📎 Uploaded Case File: {uploaded_file.name}]"})
 
     st.session_state.chats[chat_id].append({"role": "user", "message": query})
     st.session_state.chats[chat_id].append({"role": "assistant", "message": response})
 
-   
-
     title = generate_chat_title(query)
     st.session_state.chat_titles[chat_id] = title if title else "Untitled Case"
 
-
     st.rerun()
-
-
-
