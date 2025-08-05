@@ -77,7 +77,8 @@ with open("gcloud_key.json", "w") as f:
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "gcloud_key.json"
 # Step 2: Now safe to import and use Google client
 from google.cloud import vision
-vision_client = vision.ImageAnnotatorClient()
+def get_vision_client():
+    return vision.ImageAnnotatorClient()
 
 # ➕ your other code here...
 
@@ -87,6 +88,7 @@ def convert_pdf_to_images(pdf_bytes):
     return convert_from_bytes(pdf_bytes, dpi=300)  # Higher DPI for better OCR
 
 def extract_text_with_vision(image: Image.Image) -> str:
+    client = get_vision_client() 
     buf = io.BytesIO()
     image.save(buf, format="PNG")
     image_bytes = buf.getvalue()
@@ -116,6 +118,7 @@ def extract_pdf_text_with_vision(pdf_bytes) -> str:
                 st.error(error_msg)
 
     return "\n\n".join(all_text)
+
 
 
 
