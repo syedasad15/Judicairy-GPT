@@ -67,16 +67,12 @@ from google.cloud import vision
 from PIL import Image
 import streamlit as st
 import os
-import streamlit as st
-
-# ✅ Write the secret JSON to a temp file
 import json
+with open("gcloud_key.json", "w") as f:
+    json.dump(st.secrets["google_cloud"]["credentials"], f)
 
-json.dump(st.secrets["google_cloud"]["credentials"], f)
-
-
-# ✅ Set the env variable to use the temp file
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "gcloud_key.json"
+
 # Step 2: Now safe to import and use Google client
 from google.cloud import vision
 def get_vision_client():
@@ -120,6 +116,7 @@ def extract_pdf_text_with_vision(pdf_bytes) -> str:
                 st.error(error_msg)
 
     return "\n\n".join(all_text)
+
 
 
 
