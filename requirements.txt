@@ -5,3 +5,4 @@ pillow
 easyocr
 numpy
 pdf2image
+google-cloud-vision>=3.7.2
