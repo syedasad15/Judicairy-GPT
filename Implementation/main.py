@@ -148,13 +148,12 @@ with st.form(key="chat_form", clear_on_submit=True):
         )
 
         if uploaded_file:
-            file_name = uploaded_file.name.lower()
-            file_bytes = uploaded_file.read()
-
             max_file_size_mb = 10
-            if len(file_bytes) > max_file_size_mb * 1024 * 1024:
+            if uploaded_file.size > max_file_size_mb * 1024 * 1024:
                 st.error(f"❌ File is too large. Maximum allowed size is {max_file_size_mb} MB.")
             else:
+                file_name = uploaded_file.name.lower()
+                file_bytes = uploaded_file.read()
                 file_hash = hashlib.md5(file_bytes).hexdigest()
 
                 if st.session_state.last_uploaded_file_hash != file_hash:
@@ -184,7 +183,7 @@ if submitted and (user_input or st.session_state.uploaded_case_text):
 
     chat_id = st.session_state.current_chat
 
-    if uploaded_file:
+    if uploaded_file and uploaded_file.size <= 10 * 1024 * 1024:
         st.session_state.chats[chat_id].append({
             "role": "user",
             "message": f"[📎 Uploaded Case File: {uploaded_file.name}]"
