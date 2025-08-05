@@ -174,7 +174,7 @@ with st.form(key="chat_form", clear_on_submit=True):
                     st.error(f"❌ Failed to extract text: {e}")
         else:
             st.info("ℹ️ Using previously extracted text.")
-        )
+        
 
     with col2:
         submitted = st.form_submit_button("Submit Query")
@@ -204,6 +204,7 @@ if submitted and (user_input or st.session_state.uploaded_case_text):
     st.session_state.last_uploaded_file_hash = None
 
     st.rerun()
+
 
 
 
