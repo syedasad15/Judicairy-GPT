@@ -69,12 +69,12 @@ import streamlit as st
 import os
 import streamlit as st
 
-# Step 1: Save credentials JSON
-if "GOOGLE_APPLICATION_CREDENTIALS" not in os.environ:
-    with open("gcloud_key.json", "w") as f:
-        f.write(st.secrets["google_cloud"]["credentials"])
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "gcloud_key.json"
+# ✅ Write the secret JSON to a temp file
+with open("gcloud_key.json", "w") as f:
+    f.write(st.secrets["google_cloud"]["credentials"])
 
+# ✅ Set the env variable to use the temp file
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "gcloud_key.json
 # Step 2: Now safe to import and use Google client
 from google.cloud import vision
 vision_client = vision.ImageAnnotatorClient()
@@ -116,5 +116,6 @@ def extract_pdf_text_with_vision(pdf_bytes) -> str:
                 st.error(error_msg)
 
     return "\n\n".join(all_text)
+
 
 
