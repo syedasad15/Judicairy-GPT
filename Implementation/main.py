@@ -156,7 +156,6 @@ with st.form(key="chat_form", clear_on_submit=True):
                 st.success("✅ Text file loaded successfully.")
 
             elif file_name.lower().endswith(".pdf"):
-                with st.spinner("🔍 Extracting text from PDF ..."):
                     try:
                         pdf_bytes = uploaded_file.read()
             
@@ -201,6 +200,7 @@ if submitted and (user_input or st.session_state.uploaded_case_text):
 
 
     st.rerun()
+
 
 
 
