@@ -66,10 +66,12 @@ from pdf2image import convert_from_bytes
 from google.cloud import vision
 from PIL import Image
 import streamlit as st
+# ✅ Write the secret JSON to a temp file
+with open("gcloud_key.json", "w") as f:
+    f.write(st.secrets["google_cloud"]["credentials"])
 
-# 🔐 Google Cloud auth (make sure key is set in env or app secrets)
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = st.secrets["google_cloud"]["credentials_path"]
-
+# ✅ Set the env variable to use the temp file
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "gcloud_key.json"
 # 🚀 Initialize client once
 vision_client = vision.ImageAnnotatorClient()
 
@@ -107,3 +109,4 @@ def extract_pdf_text_with_vision(pdf_bytes) -> str:
                 st.error(error_msg)
 
     return "\n\n".join(all_text)
+
