@@ -1,4 +1,3 @@
-
 import streamlit as st
 from prompt_router import handle_user_input, generate_title_from_prompt
 
@@ -148,38 +147,37 @@ with st.form(key="chat_form", clear_on_submit=True):
             label_visibility="collapsed"
         )
 
-        import hashlib
-        
-        # Inside your 'if uploaded_file:' block
-        file_name = uploaded_file.name.lower()
-        file_bytes = uploaded_file.read()
-        
-        # Create a hash of the file to uniquely identify it
-        file_hash = hashlib.md5(file_bytes).hexdigest()
-        
-        # Only process if the file is new
-        if st.session_state.get("last_uploaded_file_hash") != file_hash:
-            st.session_state.last_uploaded_file_hash = file_hash  # Save new hash
-        
+        if uploaded_file:
+            file_name = uploaded_file.name.lower()
+
             if file_name.endswith(".txt"):
-                st.session_state.uploaded_case_text = file_bytes.decode("utf-8")
+                st.session_state.uploaded_case_text = uploaded_file.read().decode("utf-8")
                 st.success("✅ Text file loaded successfully.")
-        
-            elif file_name.endswith(".pdf"):
-                try:
-                    extracted_text = extract_pdf_text_with_vision(file_bytes)
-                    st.session_state.uploaded_case_text = extracted_text
-                    st.success("✅ PDF processed and text extracted!")
-                except Exception as e:
-                    st.error(f"❌ Failed to extract text: {e}")
-        else:
-            st.info("ℹ️ Using previously extracted text.")
-        
+
+            elif file_name.lower().endswith(".pdf"):
+                    try:
+                        pdf_bytes = uploaded_file.read()
+            
+                        # Optional: DPI slider for user control (you can skip if unnecessary)
+                        # dpi = st.slider("🖼️ Image Quality (DPI)", min_value=75, max_value=200, value=100, step=25)
+            
+                        # Extract text using GPT-4o-based OCR
+                        extracted_text = extract_pdf_text_with_vision(pdf_bytes)
+            
+                        # Save in session state
+                        st.session_state.uploaded_case_text = extracted_text
+            
+                        st.success("✅ PDF processed and text extracted!")
+                        # st.text_area("📄 Extracted Text", extracted_text, height=400)
+                    except Exception as e:
+                        st.error(f"❌ Failed to extract text: {e}")
+    
+            else:
+                st.warning("❌ Only .txt and .pdf files are supported.")
 
     with col2:
         submitted = st.form_submit_button("Submit Query")
 
-# --- Handle Query ---
 # --- Handle Query ---
 if submitted and (user_input or st.session_state.uploaded_case_text):
     query = user_input.strip() or "Generate legal judgment"
@@ -189,50 +187,18 @@ if submitted and (user_input or st.session_state.uploaded_case_text):
 
     chat_id = st.session_state.current_chat
     if uploaded_file:
-        st.session_state.chats[chat_id].append(
-            {"role": "user", "message": f"[📎 Uploaded Case File: {uploaded_file.name}]"}
-        )
+        st.session_state.chats[chat_id].append({"role": "user", "message": f"[📎 Uploaded Case File: {uploaded_file.name}]"})
 
     st.session_state.chats[chat_id].append({"role": "user", "message": query})
     st.session_state.chats[chat_id].append({"role": "assistant", "message": response})
 
+   
+
     title = generate_chat_title(query)
     st.session_state.chat_titles[chat_id] = title if title else "Untitled Case"
 
-    # ❗ Clear uploaded case so it won't be used for next prompt
-    st.session_state.uploaded_case_text = ""
-    st.session_state.last_uploaded_file_hash = None
 
     st.rerun()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
