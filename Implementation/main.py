@@ -127,7 +127,7 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-from Agents.ocrapp import extract_pdf_text_with_gpt4o
+from Agents.ocrapp import extract_pdf_text_with_vision
 
 
 with st.form(key="chat_form", clear_on_submit=True):
@@ -164,7 +164,7 @@ with st.form(key="chat_form", clear_on_submit=True):
                         # dpi = st.slider("🖼️ Image Quality (DPI)", min_value=75, max_value=200, value=100, step=25)
             
                         # Extract text using GPT-4o-based OCR
-                        extracted_text = extract_pdf_text_with_gpt4o(pdf_bytes)
+                        extracted_text = extract_pdf_text_with_vision(pdf_bytes)
             
                         # Save in session state
                         st.session_state.uploaded_case_text = extracted_text
@@ -201,6 +201,7 @@ if submitted and (user_input or st.session_state.uploaded_case_text):
 
 
     st.rerun()
+
 
 
 
