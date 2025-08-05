@@ -72,8 +72,8 @@ import streamlit as st
 # ✅ Write the secret JSON to a temp file
 import json
 
-with open("gcloud_key.json", "w") as f:
-    json.dump(json.loads(st.secrets["google_cloud"]["credentials"]), f)
+json.dump(st.secrets["google_cloud"]["credentials"], f)
+
 
 # ✅ Set the env variable to use the temp file
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "gcloud_key.json"
@@ -120,6 +120,7 @@ def extract_pdf_text_with_vision(pdf_bytes) -> str:
                 st.error(error_msg)
 
     return "\n\n".join(all_text)
+
 
 
 
