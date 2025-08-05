@@ -180,6 +180,7 @@ with st.form(key="chat_form", clear_on_submit=True):
         submitted = st.form_submit_button("Submit Query")
 
 # --- Handle Query ---
+# --- Handle Query ---
 if submitted and (user_input or st.session_state.uploaded_case_text):
     query = user_input.strip() or "Generate legal judgment"
 
@@ -188,18 +189,23 @@ if submitted and (user_input or st.session_state.uploaded_case_text):
 
     chat_id = st.session_state.current_chat
     if uploaded_file:
-        st.session_state.chats[chat_id].append({"role": "user", "message": f"[📎 Uploaded Case File: {uploaded_file.name}]"})
+        st.session_state.chats[chat_id].append(
+            {"role": "user", "message": f"[📎 Uploaded Case File: {uploaded_file.name}]"}
+        )
 
     st.session_state.chats[chat_id].append({"role": "user", "message": query})
     st.session_state.chats[chat_id].append({"role": "assistant", "message": response})
 
-   
-
     title = generate_chat_title(query)
     st.session_state.chat_titles[chat_id] = title if title else "Untitled Case"
 
+    # ❗ Clear uploaded case so it won't be used for next prompt
+    st.session_state.uploaded_case_text = ""
+    st.session_state.last_uploaded_file_hash = None
 
     st.rerun()
+
+
 
 
 
