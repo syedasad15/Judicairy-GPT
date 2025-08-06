@@ -395,7 +395,6 @@ with st.form(key="chat_form", clear_on_submit=True):
                             st.success("✅ Text file loaded successfully.")
 
                         elif file_name.endswith(".pdf"):
-                            elif file_name.endswith(".pdf"):
                                 try:
                                     reader = PdfReader(BytesIO(file_bytes))
                                     page_count = len(reader.pages)
@@ -462,5 +461,6 @@ if submitted and (user_input or st.session_state.uploaded_case_text) and file_va
     title = generate_chat_title(query)
     st.session_state.chat_titles[chat_id] = title if title else "Untitled Case"
     st.rerun()
+
 
 
