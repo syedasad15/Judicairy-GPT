@@ -133,8 +133,7 @@ with st.form(key="chat_form", clear_on_submit=True):
     col1, col2 = st.columns([4, 1])
 
     file_valid = True
-    uploaded_file_name = ""
-    uploaded_file = None
+    file_error_message = ""
 
     with col1:
         user_input = st.text_area(
@@ -154,72 +153,70 @@ with st.form(key="chat_form", clear_on_submit=True):
         max_file_size_mb = 10
 
         if uploaded_file:
-            uploaded_file_name = uploaded_file.name
-            file_size = uploaded_file.size
+            file_name = uploaded_file.name.lower()
+            file_bytes = uploaded_file.read()
+            file_hash = hashlib.md5(file_bytes).hexdigest()
 
-            if file_size > max_file_size_mb * 1024 * 1024:
+            if uploaded_file.size > max_file_size_mb * 1024 * 1024:
+                file_valid = False
+                file_error_message = f"❌ File is too large. Max allowed size is {max_file_size_mb} MB."
                 st.session_state.uploaded_case_text = ""
                 st.session_state.last_uploaded_file_hash = None
-                st.error(f"❌ File is too large. Max allowed size is {max_file_size_mb} MB.")
-                file_valid = False
-            else:
-                # Save position, read and reset
-                uploaded_file.seek(0)
-                file_bytes = uploaded_file.read()
-                uploaded_file.seek(0)
+                st.error(file_error_message)
 
-                file_hash = hashlib.md5(file_bytes).hexdigest()
+            elif st.session_state.last_uploaded_file_hash != file_hash:
+                try:
+                    if file_name.endswith(".txt"):
+                        st.session_state.uploaded_case_text = file_bytes.decode("utf-8")
+                        st.success("✅ Text file loaded successfully.")
 
-                if st.session_state.last_uploaded_file_hash != file_hash:
-                    try:
-                        if uploaded_file.name.lower().endswith(".txt"):
-                            st.session_state.uploaded_case_text = file_bytes.decode("utf-8")
-                            st.success("✅ Text file loaded successfully.")
-                        elif uploaded_file.name.lower().endswith(".pdf"):
-                            extracted_text = extract_pdf_text_with_vision(uploaded_file)
-                            st.session_state.uploaded_case_text = extracted_text
-                            st.success("✅ PDF processed and text extracted!")
-                        st.session_state.last_uploaded_file_hash = file_hash
-                    except Exception as e:
-                        st.session_state.uploaded_case_text = ""
-                        st.session_state.last_uploaded_file_hash = None
-                        st.error(f"❌ Failed to extract text: {e}")
-                        file_valid = False
+                    elif file_name.endswith(".pdf"):
+                        extracted_text = extract_pdf_text_with_vision(file_bytes)
+                        st.session_state.uploaded_case_text = extracted_text
+                        st.success("✅ PDF processed and text extracted!")
+
+                    st.session_state.last_uploaded_file_hash = file_hash
+
+                except Exception as e:
+                    file_valid = False
+                    file_error_message = f"❌ Failed to extract text: {e}"
+                    st.session_state.uploaded_case_text = ""
+                    st.session_state.last_uploaded_file_hash = None
+                    st.error(file_error_message)
 
     with col2:
         submitted = st.form_submit_button("Submit Query")
 
-
-
-        submitted = st.form_submit_button("Submit Query", disabled=submit_disabled)
-
 # --- Handle Query ---
-if submitted and (user_input or st.session_state.uploaded_case_text):
-    query = user_input.strip() or "Generate legal judgment"
+if submitted:
+    if uploaded_file and not file_valid:
+        st.error("❌ Cannot submit. Uploaded file is either too large or invalid.")
+    elif not user_input.strip() and not st.session_state.uploaded_case_text:
+        st.warning("⚠️ Please enter a query or upload a valid case file.")
+    else:
+        query = user_input.strip() or "Generate legal judgment"
 
-    with st.spinner("Processing..."):
-        response = handle_user_input(query)
+        with st.spinner("Processing..."):
+            response = handle_user_input(query)
 
-    chat_id = st.session_state.current_chat
+        chat_id = st.session_state.current_chat
 
-    if uploaded_file and file_valid:
+        if uploaded_file and uploaded_file.size <= 10 * 1024 * 1024:
+            st.session_state.chats[chat_id].append({
+                "role": "user",
+                "message": f"[📎 Uploaded Case File: {uploaded_file.name}]"
+            })
+
         st.session_state.chats[chat_id].append({
             "role": "user",
-            "message": f"[📎 Uploaded Case File: {uploaded_file_name}]"
+            "message": query
         })
 
-    st.session_state.chats[chat_id].append({
-        "role": "user",
-        "message": query
-    })
+        st.session_state.chats[chat_id].append({
+            "role": "assistant",
+            "message": response
+        })
 
-    st.session_state.chats[chat_id].append({
-        "role": "assistant",
-        "message": response
-    })
-
-    title = generate_chat_title(query)
-    st.session_state.chat_titles[chat_id] = title if title else "Untitled Case"
-    st.rerun()
-
-
+        title = generate_chat_title(query)
+        st.session_state.chat_titles[chat_id] = title if title else "Untitled Case"
+        st.rerun()
