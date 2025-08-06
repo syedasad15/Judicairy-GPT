@@ -370,7 +370,7 @@ with st.form(key="chat_form", clear_on_submit=True):
             placeholder="Type your legal query here or upload a .txt or .pdf case..."
         )
 
-         st.markdown(
+        st.markdown(
     """
     <style>
     /* Hide Streamlit's default 200MB file size & format message below the file uploader */
@@ -479,6 +479,7 @@ if submitted and (user_input or st.session_state.uploaded_case_text) and file_va
     title = generate_chat_title(query)
     st.session_state.chat_titles[chat_id] = title if title else "Untitled Case"
     st.rerun()
+
 
 
 
