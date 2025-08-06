@@ -381,7 +381,7 @@ with st.form(key="chat_form", clear_on_submit=True):
             label_visibility="collapsed"
         )
 
-        )
+        
 
         if uploaded_file:
             max_file_size_mb = 10
@@ -468,6 +468,7 @@ if submitted and (user_input or st.session_state.uploaded_case_text) and file_va
     title = generate_chat_title(query)
     st.session_state.chat_titles[chat_id] = title if title else "Untitled Case"
     st.rerun()
+
 
 
 
