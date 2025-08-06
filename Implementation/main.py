@@ -132,6 +132,10 @@ st.markdown(
 with st.form(key="chat_form", clear_on_submit=True):
     col1, col2 = st.columns([4, 1])
 
+    file_valid = True  # Assume file is valid by default
+    uploaded_file = None
+    uploaded_file_name = ""
+    
     with col1:
         user_input = st.text_area(
             "Enter your judicial query:",
@@ -147,32 +151,43 @@ with st.form(key="chat_form", clear_on_submit=True):
             label_visibility="collapsed"
         )
 
+        max_file_size_mb = 10
+
         if uploaded_file:
-            max_file_size_mb = 10
+            uploaded_file_name = uploaded_file.name
+            file_name = uploaded_file.name.lower()
+            file_bytes = uploaded_file.read()
+            file_hash = hashlib.md5(file_bytes).hexdigest()
+
             if uploaded_file.size > max_file_size_mb * 1024 * 1024:
-                st.error(f"❌ File is too large. Maximum allowed size is {max_file_size_mb} MB.")
-            else:
-                file_name = uploaded_file.name.lower()
-                file_bytes = uploaded_file.read()
-                file_hash = hashlib.md5(file_bytes).hexdigest()
+                st.session_state.uploaded_case_text = ""
+                st.session_state.last_uploaded_file_hash = None
+                st.error(f"❌ File is too large. Max allowed size is {max_file_size_mb} MB.")
+                file_valid = False
 
-                if st.session_state.last_uploaded_file_hash != file_hash:
-                    st.session_state.last_uploaded_file_hash = file_hash
-
+            elif st.session_state.last_uploaded_file_hash != file_hash:
+                try:
                     if file_name.endswith(".txt"):
                         st.session_state.uploaded_case_text = file_bytes.decode("utf-8")
                         st.success("✅ Text file loaded successfully.")
-
                     elif file_name.endswith(".pdf"):
-                        try:
-                            extracted_text = extract_pdf_text_with_vision(file_bytes)
-                            st.session_state.uploaded_case_text = extracted_text
-                            st.success("✅ PDF processed and text extracted!")
-                        except Exception as e:
-                            st.error(f"❌ Failed to extract text: {e}")
+                        extracted_text = extract_pdf_text_with_vision(file_bytes)
+                        st.session_state.uploaded_case_text = extracted_text
+                        st.success("✅ PDF processed and text extracted!")
+                    st.session_state.last_uploaded_file_hash = file_hash
+                except Exception as e:
+                    st.session_state.uploaded_case_text = ""
+                    st.session_state.last_uploaded_file_hash = None
+                    st.error(f"❌ Failed to extract text: {e}")
+                    file_valid = False
 
     with col2:
-        submitted = st.form_submit_button("Submit Query")
+        submit_disabled = (
+            (uploaded_file and not file_valid) or
+            (not user_input.strip() and not st.session_state.uploaded_case_text)
+        )
+
+        submitted = st.form_submit_button("Submit Query", disabled=submit_disabled)
 
 # --- Handle Query ---
 if submitted and (user_input or st.session_state.uploaded_case_text):
@@ -183,10 +198,10 @@ if submitted and (user_input or st.session_state.uploaded_case_text):
 
     chat_id = st.session_state.current_chat
 
-    if uploaded_file and uploaded_file.size <= 10 * 1024 * 1024:
+    if uploaded_file and file_valid:
         st.session_state.chats[chat_id].append({
             "role": "user",
-            "message": f"[📎 Uploaded Case File: {uploaded_file.name}]"
+            "message": f"[📎 Uploaded Case File: {uploaded_file_name}]"
         })
 
     st.session_state.chats[chat_id].append({
