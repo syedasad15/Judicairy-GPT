@@ -225,7 +225,8 @@
 
 import streamlit as st
 from prompt_router import handle_user_input, generate_title_from_prompt
-
+from PyPDF2 import PdfReader
+from io import BytesIO
 import uuid
 import os
 from Agents import download_agent
@@ -394,8 +395,23 @@ with st.form(key="chat_form", clear_on_submit=True):
                             st.success("✅ Text file loaded successfully.")
 
                         elif file_name.endswith(".pdf"):
-                            try:
-                                extracted_text = extract_pdf_text_with_vision(file_bytes)
+                            elif file_name.endswith(".pdf"):
+                                try:
+                                    reader = PdfReader(BytesIO(file_bytes))
+                                    page_count = len(reader.pages)
+                            
+                                    if page_count > 30:
+                                        file_valid = False
+                                        file_error_message = "❌ PDF too long. Max 30 pages allowed."
+                                        st.error(file_error_message)
+                                    else:
+                                        extracted_text = extract_pdf_text_with_vision(file_bytes)
+                                        if not extracted_text or len(extracted_text.strip()) < 50:
+                                            st.error("❌ PDF was processed but no meaningful text was extracted.")
+                                        else:
+                                            st.session_state.uploaded_case_text = extracted_text[:10000]  # Optional limit
+                                            st.success("✅ PDF processed and text extracted!")
+
                                 if not extracted_text or len(extracted_text.strip()) < 50:
                                     st.error("❌ PDF was processed but no meaningful text was extracted.")
                                 else:
@@ -446,4 +462,5 @@ if submitted and (user_input or st.session_state.uploaded_case_text) and file_va
     title = generate_chat_title(query)
     st.session_state.chat_titles[chat_id] = title if title else "Untitled Case"
     st.rerun()
+
 
