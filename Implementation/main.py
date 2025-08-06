@@ -132,10 +132,10 @@ st.markdown(
 with st.form(key="chat_form", clear_on_submit=True):
     col1, col2 = st.columns([4, 1])
 
-    file_valid = True  # Assume file is valid by default
-    uploaded_file = None
+    file_valid = True
     uploaded_file_name = ""
-    
+    uploaded_file = None
+
     with col1:
         user_input = st.text_area(
             "Enter your judicial query:",
@@ -155,31 +155,36 @@ with st.form(key="chat_form", clear_on_submit=True):
 
         if uploaded_file:
             uploaded_file_name = uploaded_file.name
-            file_name = uploaded_file.name.lower()
-            file_bytes = uploaded_file.read()
-            file_hash = hashlib.md5(file_bytes).hexdigest()
+            file_size = uploaded_file.size
 
-            if uploaded_file.size > max_file_size_mb * 1024 * 1024:
+            if file_size > max_file_size_mb * 1024 * 1024:
                 st.session_state.uploaded_case_text = ""
                 st.session_state.last_uploaded_file_hash = None
                 st.error(f"❌ File is too large. Max allowed size is {max_file_size_mb} MB.")
                 file_valid = False
+            else:
+                # Save position, read and reset
+                uploaded_file.seek(0)
+                file_bytes = uploaded_file.read()
+                uploaded_file.seek(0)
 
-            elif st.session_state.last_uploaded_file_hash != file_hash:
-                try:
-                    if file_name.endswith(".txt"):
-                        st.session_state.uploaded_case_text = file_bytes.decode("utf-8")
-                        st.success("✅ Text file loaded successfully.")
-                    elif file_name.endswith(".pdf"):
-                        extracted_text = extract_pdf_text_with_vision(file_bytes)
-                        st.session_state.uploaded_case_text = extracted_text
-                        st.success("✅ PDF processed and text extracted!")
-                    st.session_state.last_uploaded_file_hash = file_hash
-                except Exception as e:
-                    st.session_state.uploaded_case_text = ""
-                    st.session_state.last_uploaded_file_hash = None
-                    st.error(f"❌ Failed to extract text: {e}")
-                    file_valid = False
+                file_hash = hashlib.md5(file_bytes).hexdigest()
+
+                if st.session_state.last_uploaded_file_hash != file_hash:
+                    try:
+                        if uploaded_file.name.lower().endswith(".txt"):
+                            st.session_state.uploaded_case_text = file_bytes.decode("utf-8")
+                            st.success("✅ Text file loaded successfully.")
+                        elif uploaded_file.name.lower().endswith(".pdf"):
+                            extracted_text = extract_pdf_text_with_vision(uploaded_file)
+                            st.session_state.uploaded_case_text = extracted_text
+                            st.success("✅ PDF processed and text extracted!")
+                        st.session_state.last_uploaded_file_hash = file_hash
+                    except Exception as e:
+                        st.session_state.uploaded_case_text = ""
+                        st.session_state.last_uploaded_file_hash = None
+                        st.error(f"❌ Failed to extract text: {e}")
+                        file_valid = False
 
     with col2:
         submit_disabled = (
