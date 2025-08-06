@@ -188,9 +188,10 @@ with st.form(key="chat_form", clear_on_submit=True):
 
     with col2:
         submit_disabled = (
-            (uploaded_file and not file_valid) or
-            (not user_input.strip() and not st.session_state.uploaded_case_text)
-        )
+    (uploaded_file and not file_valid) or
+    (not user_input.strip() and not st.session_state.uploaded_case_text.strip())
+)
+
 
         submitted = st.form_submit_button("Submit Query", disabled=submit_disabled)
 
@@ -222,3 +223,4 @@ if submitted and (user_input or st.session_state.uploaded_case_text):
     title = generate_chat_title(query)
     st.session_state.chat_titles[chat_id] = title if title else "Untitled Case"
     st.rerun()
+
