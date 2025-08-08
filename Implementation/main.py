@@ -514,7 +514,7 @@ st.markdown(
  --gold: hashtag#bfa46f;
  --gold-soft: hashtag#d4bc8b;
  --ivory: hashtag#fdfcf9;
- --sidebar-bg: hashtag#f5f5f5; /* Warm gray background for sidebar */
+ --sidebar-bg: hashtag#f9f9f9; /* Very light gray background for sidebar */
  --radius: 12px;
  --shadow: 0 2px 10px rgba(0,0,0,.07);
  --shadow-hover: 0 4px 20px rgba(0,0,0,.12);
@@ -750,6 +750,7 @@ if submitted and (user_input or st.session_state.uploaded_case_text):
 
     st.session_state.chat_titles[chat_id] = generate_chat_title(query) or "Untitled Case"
     st.rerun()
+
 
 
 
