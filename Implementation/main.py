@@ -670,11 +670,16 @@ with st.container():
                 placeholder="Type your legal query here or upload a .txt / .pdf case …",
             )
 
+            st.markdown(
+            "<small style='color: #666;'>Limit: 10MB per file • Max 30 pages • TXT, PDF</small>",
+            unsafe_allow_html=True
+        )
+        
             uploaded_file = st.file_uploader(
-                "📎 Upload Case File (.txt or .pdf)",
-                type=["txt", "pdf"],
-                label_visibility="collapsed",
-            )
+                    "📎 Upload Case File (.txt or .pdf)",
+                    type=["txt", "pdf"],
+                    label_visibility="collapsed"
+                )
 
             if uploaded_file:
                 max_mb = 10
@@ -723,3 +728,4 @@ if submitted and (user_input or st.session_state.uploaded_case_text):
 
     st.session_state.chat_titles[chat_id] = generate_chat_title(query) or "Untitled Case"
     st.rerun()
+
