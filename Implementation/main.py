@@ -471,7 +471,7 @@
 #     st.rerun()
 
 ###############################################################################
-#  NEW  FRONT-END  ONLY  –  drop-in replacement
+#  NEW  PREMIUM  STYLING  ONLY
 ###############################################################################
 import streamlit as st
 from prompt_router import handle_user_input
@@ -483,111 +483,118 @@ from PyPDF2 import PdfReader
 from io import BytesIO
 import uuid, hashlib, re
 
-# ---------- page ----------
-st.set_page_config(
-    page_title=" PakLaw Judicial Assistant",
-    page_icon="⚖️",
-    layout="wide",
-    initial_sidebar_state="expanded"
+# ---------- Google Fonts ----------
+st.markdown(
+    """
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Serif+Pro:wght@300;400;600&display=swap" rel="stylesheet">
+""",
+    unsafe_allow_html=True,
 )
 
-# ---------- css ----------
+# ---------- CSS ----------
 st.markdown(
     """
 <style>
-/* --- root variables --- */
 :root {
-    --brand: #2E3B55;
-    --brand-light: #3f4f70;
-    --accent: #FFD700;
-    --bg-chat: #fafbfc;
-    --bg-sidebar: #ffffff;
+    --charcoal: #111827;
+    --charcoal-light: #1f2937;
+    --gold: #bfa46f;
+    --gold-soft: #d4bc8b;
+    --ivory: #fdfcf9;
     --radius: 12px;
-    --shadow: 0 2px 8px rgba(0,0,0,.08);
-    --shadow-hover: 0 4px 16px rgba(0,0,0,.12);
+    --shadow: 0 2px 10px rgba(0,0,0,.07);
+    --shadow-hover: 0 4px 20px rgba(0,0,0,.12);
 }
 
-/* --- global --- */
-html, body, .main {
-    background-color: var(--bg-chat);
-}
-.block-container {
-    padding-top: 3rem;
-    padding-bottom: 8rem;
+html, body, .main, [data-testid="stApp"] {
+    background-color: var(--ivory);
+    font-family: 'Source Serif Pro', serif;
+    color: var(--charcoal);
 }
 
-/* --- sidebar --- */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 600;
+    color: var(--charcoal);
+}
+
+/* --- sidebar premium --- */
 [data-testid="stSidebar"] {
-    background-color: var(--bg-sidebar);
-    border-right: 1px solid #e5e7eb;
+    background: var(--charcoal);
+    border-right: none;
 }
-.sidebar-card {
-    background: #ffffff;
+[data-testid="stSidebar"] .sidebar-card {
+    background: var(--charcoal-light);
+    color: var(--ivory);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
-    margin-bottom: .6rem;
     transition: .25s;
+    font-family: 'Source Serif Pro', serif;
 }
-.sidebar-card:hover {
+[data-testid="stSidebar"] .sidebar-card:hover {
+    background: var(--gold);
+    color: var(--charcoal);
     box-shadow: var(--shadow-hover);
-    transform: translateY(-1px);
+    transform: translateY(-2px);
 }
 
-/* --- chat bubbles --- */
+/* --- chat bubbles premium --- */
 .chat-user, .chat-assistant {
     max-width: 80%;
-    padding: .8rem 1.1rem;
+    padding: .9rem 1.2rem;
     border-radius: var(--radius);
-    margin-bottom: .7rem;
+    margin-bottom: .8rem;
     animation: fadeIn .4s ease-in-out;
-    word-wrap: break-word;
 }
 .chat-user {
-    background: #e6f0fa;
-    border-left: 4px solid var(--brand);
+    background: #f3f0eb;
+    border-left: 4px solid var(--gold);
     margin-left: auto;
+    color: var(--charcoal);
 }
 .chat-assistant {
-    background: #f6f8fa;
-    border-left: 4px solid var(--accent);
+    background: #ede8e1;
+    border-left: 4px solid var(--charcoal);
     margin-right: auto;
-}
-@keyframes fadeIn {
-    from {opacity: 0; transform: translateY(8px);}
-    to   {opacity: 1; transform: translateY(0);}
+    color: var(--charcoal);
 }
 
-/* --- sticky bottom bar --- */
+/* --- sticky bar premium --- */
 .chat-bar {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    background: #ffffff;
-    border-top: 1px solid #e5e7eb;
-    box-shadow: 0 -2px 8px rgba(0,0,0,.05);
+    background: var(--ivory);
+    border-top: 2px solid var(--gold-soft);
+    box-shadow: var(--shadow);
     z-index: 1000;
-    padding: .8rem 2rem 1.2rem;
+    padding: .9rem 2.2rem 1.4rem;
+    font-family: 'Source Serif Pro', serif;
 }
 .chat-bar textarea {
-    border: 2px solid var(--brand);
+    border: 2px solid var(--gold);
     border-radius: var(--radius);
-    font-size: 1rem;
+    font-size: 1.05rem;
+    font-family: 'Source Serif Pro', serif;
 }
 .chat-bar textarea:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 .15rem rgba(255,215,0,.35);
+    border-color: var(--charcoal);
+    box-shadow: 0 0 0 .15rem rgba(191,164,111,.35);
 }
 .stButton>button {
     border-radius: var(--radius);
+    font-family: 'Playfair Display', serif;
     font-weight: 600;
-    background: var(--brand);
+    background: var(--gold);
+    color: var(--charcoal);
     border: none;
-    color: #fff;
     transition: .25s;
 }
 .stButton>button:hover {
-    background: var(--brand-light);
+    background: var(--gold-soft);
     transform: translateY(-1px);
 }
 </style>
@@ -724,5 +731,6 @@ if submitted and (user_input or st.session_state.uploaded_case_text):
 
     st.session_state.chat_titles[chat_id] = generate_chat_title(query) or "Untitled Case"
     st.rerun()
+
 
 
