@@ -485,7 +485,7 @@ import uuid, hashlib, re
 
 # ---------- page ----------
 st.set_page_config(
-    page_title="PakLaw Judicial Assistant",
+    page_title=" PakLaw Judicial Assistant",
     page_icon="⚖️",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -724,4 +724,5 @@ if submitted and (user_input or st.session_state.uploaded_case_text):
 
     st.session_state.chat_titles[chat_id] = generate_chat_title(query) or "Untitled Case"
     st.rerun()
+
 
