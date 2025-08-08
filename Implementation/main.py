@@ -509,109 +509,108 @@ st.markdown(
     """
 <style>
 :root {
-    --charcoal: #111827;
-    --charcoal-light: #1f2937;
-    --gold: #bfa46f;
-    --gold-soft: #d4bc8b;
-    --ivory: #fdfcf9;
-    --radius: 12px;
-    --shadow: 0 2px 10px rgba(0,0,0,.07);
-    --shadow-hover: 0 4px 20px rgba(0,0,0,.12);
+ --charcoal: #111827;
+ --charcoal-light: hashtag#1f2937;
+ --gold: hashtag#bfa46f;
+ --gold-soft: hashtag#d4bc8b;
+ --ivory: hashtag#fdfcf9;
+ --sidebar-bg: hashtag#f5f5f5; /* NEW warm gray */
+ --radius: 12px;
+ --shadow: 0 2px 10px rgba(0,0,0,.07);
+ --shadow-hover: 0 4px 20px rgba(0,0,0,.12);
 }
 
 html, body, .main, [data-testid="stApp"] {
-    background-color: var(--ivory);
-    font-family: 'Source Serif Pro', serif;
-    color: var(--charcoal);
+ background-color: var(--ivory);
+ font-family: 'Source Serif Pro', serif;
+ color: var(--charcoal);
 }
 
 h1, h2, h3, h4, h5, h6 {
-    font-family: 'Playfair Display', serif;
-    font-weight: 600;
-    color: var(--charcoal);
+ font-family: 'Playfair Display', serif;
+ font-weight: 600;
+ color: var(--charcoal);
 }
 
-/* Sidebar */
+/* ---------- Sidebar (light) ---------- */
 [data-testid="stSidebar"] {
-    background: var(--charcoal);
-    border-right: none;
+ background: var(--sidebar-bg);
+ border-right: 1px solid hashtag#e5e5e5;
 }
 .sidebar-card {
-    background: var(--charcoal-light);
-    color: var(--ivory);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    margin-bottom: .6rem;
-    transition: .25s;
-    font-family: 'Source Serif Pro', serif;
+ background: hashtag#ffffff;
+ color: var(--charcoal);
+ border-radius: var(--radius);
+ box-shadow: var(--shadow);
+ margin-bottom: .6rem;
+ transition: .25s;
+ font-family: 'Source Serif Pro', serif;
 }
 .sidebar-card:hover {
-    background: var(--gold);
-    color: var(--charcoal);
-    box-shadow: var(--shadow-hover);
-    transform: translateY(-2px);
+ background: var(--gold);
+ color: hashtag#ffffff;
+ box-shadow: var(--shadow-hover);
+ transform: translateY(-2px);
 }
 
-/* Chat bubbles */
+/* ---------- Chat bubbles (unchanged) ---------- */
 .chat-user, .chat-assistant {
-    max-width: 80%;
-    padding: .9rem 1.2rem;
-    border-radius: var(--radius);
-    margin-bottom: .8rem;
-    animation: fadeIn .4s ease-in-out;
+ max-width: 80%;
+ padding: .9rem 1.2rem;
+ border-radius: var(--radius);
+ margin-bottom: .8rem;
+ animation: fadeIn .4s ease-in-out;
 }
 .chat-user {
-    background: #f3f0eb;
-    border-left: 4px solid var(--gold);
-    margin-left: auto;
-    color: var(--charcoal);
+ background: hashtag#f3f0eb;
+ border-left: 4px solid var(--gold);
+ margin-left: auto;
 }
 .chat-assistant {
-    background: #ede8e1;
-    border-left: 4px solid var(--charcoal);
-    margin-right: auto;
-    color: var(--charcoal);
+ background: hashtag#ede8e1;
+ border-left: 4px solid var(--charcoal);
+ margin-right: auto;
 }
 @keyframes fadeIn {
-    from {opacity: 0; transform: translateY(8px);}
-    to   {opacity: 1; transform: translateY(0);}
+ from {opacity: 0; transform: translateY(8px);}
+ to {opacity: 1; transform: translateY(0);}
 }
 
-/* Sticky bottom bar */
+/* ---------- Sticky bottom bar (unchanged) ---------- */
 .chat-bar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: var(--ivory);
-    border-top: 2px solid var(--gold-soft);
-    box-shadow: var(--shadow);
-    z-index: 1000;
-    padding: .9rem 2.2rem 1.4rem;
-    font-family: 'Source Serif Pro', serif;
+ position: fixed;
+ bottom: 0;
+ left: 0;
+ right: 0;
+ background: var(--ivory);
+ border-top: 2px solid var(--gold-soft);
+ box-shadow: var(--shadow);
+ z-index: 1000;
+ padding: .9rem 2.2rem 1.4rem;
+ font-family: 'Source Serif Pro', serif;
 }
 .chat-bar textarea {
-    border: 2px solid var(--gold);
-    border-radius: var(--radius);
-    font-size: 1.05rem;
-    font-family: 'Source Serif Pro', serif;
+ border: 2px solid var(--gold);
+ border-radius: var(--radius);
+ font-size: 1.05rem;
+ font-family: 'Source Serif Pro', serif;
 }
 .chat-bar textarea:focus {
-    border-color: var(--charcoal);
-    box-shadow: 0 0 0 .15rem rgba(191,164,111,.35);
+ border-color: var(--charcoal);
+ box-shadow: 0 0 0 .15rem rgba(191,164,111,.35);
 }
 .stButton>button {
-    border-radius: var(--radius);
-    font-family: 'Playfair Display', serif;
-    font-weight: 600;
-    background: var(--gold);
-    color: var(--charcoal);
-    border: none;
-    transition: .25s;
+ border-radius: var(--radius);
+ font-family: 'Playfair Display', serif;
+ font-weight: 600;
+ background: var(--gold);
+ color: var(--charcoal);
+ border: none;
+ transition: .25s;
 }
 .stButton>button:hover {
-    background: var(--gold-soft);
-    transform: translateY(-1px);
+ background: var(--gold-soft);
+ transform: translateY(-1px);
 }
 </style>
 """,
@@ -749,6 +748,7 @@ if submitted and (user_input or st.session_state.uploaded_case_text):
 
     st.session_state.chat_titles[chat_id] = generate_chat_title(query) or "Untitled Case"
     st.rerun()
+
 
 
 
