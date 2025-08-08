@@ -471,17 +471,28 @@
 #     st.rerun()
 
 ###############################################################################
-#  NEW  PREMIUM  STYLING  ONLY
+#  PakLaw Judicial Assistant  –  PREMIUM  UI  FINAL
 ###############################################################################
 import streamlit as st
 from prompt_router import handle_user_input
-from utils import intent_classifier
-from Agents import download_agent
-from Agents.title_generator import generate_chat_title
-from Agents.ocrapp import extract_pdf_text_with_vision
 from PyPDF2 import PdfReader
 from io import BytesIO
-import uuid, hashlib, re
+import uuid
+import os
+from Agents import download_agent
+from utils import intent_classifier
+from Agents.title_generator import generate_chat_title
+from Agents.ocrapp import extract_pdf_text_with_vision
+import hashlib
+import re
+
+# ---------- Page Config ----------
+st.set_page_config(
+    page_title="PakLaw Judicial Assistant",
+    page_icon="⚖",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
 # ---------- Google Fonts ----------
 st.markdown(
@@ -493,7 +504,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# ---------- CSS ----------
+# ---------- Global CSS ----------
 st.markdown(
     """
 <style>
@@ -520,27 +531,28 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--charcoal);
 }
 
-/* --- sidebar premium --- */
+/* Sidebar */
 [data-testid="stSidebar"] {
     background: var(--charcoal);
     border-right: none;
 }
-[data-testid="stSidebar"] .sidebar-card {
+.sidebar-card {
     background: var(--charcoal-light);
     color: var(--ivory);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
+    margin-bottom: .6rem;
     transition: .25s;
     font-family: 'Source Serif Pro', serif;
 }
-[data-testid="stSidebar"] .sidebar-card:hover {
+.sidebar-card:hover {
     background: var(--gold);
     color: var(--charcoal);
     box-shadow: var(--shadow-hover);
     transform: translateY(-2px);
 }
 
-/* --- chat bubbles premium --- */
+/* Chat bubbles */
 .chat-user, .chat-assistant {
     max-width: 80%;
     padding: .9rem 1.2rem;
@@ -560,8 +572,12 @@ h1, h2, h3, h4, h5, h6 {
     margin-right: auto;
     color: var(--charcoal);
 }
+@keyframes fadeIn {
+    from {opacity: 0; transform: translateY(8px);}
+    to   {opacity: 1; transform: translateY(0);}
+}
 
-/* --- sticky bar premium --- */
+/* Sticky bottom bar */
 .chat-bar {
     position: fixed;
     bottom: 0;
@@ -602,7 +618,7 @@ h1, h2, h3, h4, h5, h6 {
     unsafe_allow_html=True,
 )
 
-# ---------- session ----------
+# ---------- Session State ----------
 if "chats" not in st.session_state:
     st.session_state.chats = {}
 if "chat_titles" not in st.session_state:
@@ -617,7 +633,7 @@ if "uploaded_case_text" not in st.session_state:
 if "last_uploaded_file_hash" not in st.session_state:
     st.session_state.last_uploaded_file_hash = None
 
-# ---------- sidebar ----------
+# ---------- Sidebar ----------
 with st.sidebar:
     st.markdown("### 📁 Case Files")
     if st.button("➕ New Case", use_container_width=True):
@@ -635,11 +651,10 @@ with st.sidebar:
             st.session_state.current_chat = cid
             st.rerun()
 
-# ---------- header ----------
-st.title("⚖️ PakLaw Judicial Assistant")
+# ---------- Main Area ----------
+st.title("⚖ PakLaw Judicial Assistant")
 st.caption("Interactive legal assistant for Pakistan’s judicial system.")
 
-# ---------- chat display ----------
 st.markdown("### 📜 Case Discussion & Judgments")
 
 chat_id = st.session_state.current_chat
@@ -657,12 +672,12 @@ with chat_area:
             html = re.sub(r"(?m)^([A-Z][a-z]+):", r"<strong>\1:</strong>", msg["message"])
             html = html.replace("\n", "<br>")
             st.markdown(
-                f'<div class="chat-assistant"><strong>⚖️ Assistant:</strong><br>{html}</div>',
+                f'<div class="chat-assistant"><strong>⚖ Assistant:</strong><br>{html}</div>',
                 unsafe_allow_html=True,
             )
             download_agent.show_download_if_applicable(idx, current_chat, intent_classifier.classify_prompt_intent)
 
-# ---------- sticky input ----------
+# ---------- Sticky Input ----------
 with st.container():
     st.markdown('<div class="chat-bar">', unsafe_allow_html=True)
 
@@ -675,7 +690,7 @@ with st.container():
                 key="user_input",
                 label_visibility="collapsed",
                 height=100,
-                placeholder="Type your legal query here or upload a .txt / .pdf case …",
+                placeholder="Type your legal query here or upload a .txt / .pdf case …"
             )
 
             uploaded_file = st.file_uploader(
@@ -686,7 +701,8 @@ with st.container():
             st.caption(
                 "<small style='color:#666;'>Limit: 10 MB • Max 30 pages • TXT, PDF</small>",
                 unsafe_allow_html=True,
-            )
+            )
+
             if uploaded_file:
                 max_mb = 10
                 if uploaded_file.size > max_mb * 1024 * 1024:
@@ -711,7 +727,6 @@ with st.container():
                                     else:
                                         st.session_state.uploaded_case_text = txt[:10_000]
                                         st.success("✅ PDF processed.")
-
                         except Exception as e:
                             st.error(f"❌ Could not read file: {e}")
 
@@ -720,7 +735,7 @@ with st.container():
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-# ---------- query handler ----------
+# ---------- Query Handler ----------
 if submitted and (user_input or st.session_state.uploaded_case_text):
     query = user_input.strip() or "Generate legal judgment"
     with st.spinner("Processing …"):
