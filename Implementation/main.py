@@ -485,8 +485,8 @@ import uuid, hashlib, re
 
 # ---------- page ----------
 st.set_page_config(
-    page_title="⚖️ PakLaw Judicial Assistant",
-    # page_icon="⚖️",
+    page_title="PakLaw Judicial Assistant",
+    page_icon="⚖️",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -629,7 +629,7 @@ with st.sidebar:
             st.rerun()
 
 # ---------- header ----------
-st.title("⚖ PakLaw Judicial Assistant")
+st.title("⚖️ PakLaw Judicial Assistant")
 st.caption("Interactive legal assistant for Pakistan’s judicial system.")
 
 # ---------- chat display ----------
@@ -650,7 +650,7 @@ with chat_area:
             html = re.sub(r"(?m)^([A-Z][a-z]+):", r"<strong>\1:</strong>", msg["message"])
             html = html.replace("\n", "<br>")
             st.markdown(
-                f'<div class="chat-assistant"><strong>⚖ Assistant:</strong><br>{html}</div>',
+                f'<div class="chat-assistant"><strong>⚖️ Assistant:</strong><br>{html}</div>',
                 unsafe_allow_html=True,
             )
             download_agent.show_download_if_applicable(idx, current_chat, intent_classifier.classify_prompt_intent)
