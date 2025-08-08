@@ -514,7 +514,7 @@ st.markdown(
  --gold: hashtag#bfa46f;
  --gold-soft: hashtag#d4bc8b;
  --ivory: hashtag#fdfcf9;
- --sidebar-bg: hashtag#f5f5f5; /* NEW warm gray */
+ --sidebar-bg: hashtag#f5f5f5; /* Warm gray background for sidebar */
  --radius: 12px;
  --shadow: 0 2px 10px rgba(0,0,0,.07);
  --shadow-hover: 0 4px 20px rgba(0,0,0,.12);
@@ -535,7 +535,8 @@ h1, h2, h3, h4, h5, h6 {
 /* ---------- Sidebar (light) ---------- */
 [data-testid="stSidebar"] {
  background: var(--sidebar-bg);
- border-right: 1px solid hashtag#e5e5e5;
+ border-right: 1px solid hashtag#e5e5e5; /* Border to separate sidebar from main content */
+ padding: 1rem; /* Add some padding for better spacing */
 }
 .sidebar-card {
  background: hashtag#ffffff;
@@ -545,6 +546,7 @@ h1, h2, h3, h4, h5, h6 {
  margin-bottom: .6rem;
  transition: .25s;
  font-family: 'Source Serif Pro', serif;
+ padding: 1rem; /* Add padding inside cards */
 }
 .sidebar-card:hover {
  background: var(--gold);
@@ -748,6 +750,7 @@ if submitted and (user_input or st.session_state.uploaded_case_text):
 
     st.session_state.chat_titles[chat_id] = generate_chat_title(query) or "Untitled Case"
     st.rerun()
+
 
 
 
