@@ -564,7 +564,7 @@ html, body, .main {
     left: 0;
     right: 0;
     background: #ffffff;
-    border-top: 1px solid #e5e7eb;
+    border-top: 4px solid var(--brand);
     box-shadow: 0 -2px 8px rgba(0,0,0,.05);
     z-index: 1000;
     padding: .8rem 2rem 1.2rem;
@@ -729,5 +729,6 @@ if submitted and (user_input or st.session_state.uploaded_case_text):
 
     st.session_state.chat_titles[chat_id] = generate_chat_title(query) or "Untitled Case"
     st.rerun()
+
 
 
