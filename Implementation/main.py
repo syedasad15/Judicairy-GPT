@@ -469,157 +469,132 @@
 #     title = generate_chat_title(query)
 #     st.session_state.chat_titles[chat_id] = title if title else "Untitled Case"
 #     st.rerun()
-
 ###############################################################################
-#  PakLaw Judicial Assistant  –  PREMIUM  UI  FINAL
+#  NEW  FRONT-END  ONLY  –  drop-in replacement
 ###############################################################################
 import streamlit as st
 from prompt_router import handle_user_input
-from PyPDF2 import PdfReader
-from io import BytesIO
-import uuid
-import os
-from Agents import download_agent
 from utils import intent_classifier
+from Agents import download_agent
 from Agents.title_generator import generate_chat_title
 from Agents.ocrapp import extract_pdf_text_with_vision
-import hashlib
-import re
+from PyPDF2 import PdfReader
+from io import BytesIO
+import uuid, hashlib, re
 
-# ---------- Page Config ----------
+# ---------- page ----------
 st.set_page_config(
     page_title="PakLaw Judicial Assistant",
-    page_icon="⚖",
+    page_icon="⚖️",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# ---------- Google Fonts ----------
-st.markdown(
-    """
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Serif+Pro:wght@300;400;600&display=swap" rel="stylesheet">
-""",
-    unsafe_allow_html=True,
-)
-
-# ---------- Global CSS ----------
+# ---------- css ----------
 st.markdown(
     """
 <style>
+/* --- root variables --- */
 :root {
- --charcoal: #111827;
- --charcoal-light: hashtag#1f2937;
- --gold: hashtag#bfa46f;
- --gold-soft: hashtag#d4bc8b;
- --ivory: hashtag#fdfcf9;
- --sidebar-bg: hashtag#f9f9f9; /* Very light gray background for sidebar */
- --radius: 12px;
- --shadow: 0 2px 10px rgba(0,0,0,.07);
- --shadow-hover: 0 4px 20px rgba(0,0,0,.12);
+    --brand: #2E3B55;
+    --brand-light: #3f4f70;
+    --accent: #FFD700;
+    --bg-chat: #fafbfc;
+    --bg-sidebar: #ffffff;
+    --radius: 12px;
+    --shadow: 0 2px 8px rgba(0,0,0,.08);
+    --shadow-hover: 0 4px 16px rgba(0,0,0,.12);
 }
 
-html, body, .main, [data-testid="stApp"] {
- background-color: var(--ivory);
- font-family: 'Source Serif Pro', serif;
- color: var(--charcoal);
+/* --- global --- */
+html, body, .main {
+    background-color: var(--bg-chat);
+}
+.block-container {
+    padding-top: 3rem;
+    padding-bottom: 8rem;
 }
 
-h1, h2, h3, h4, h5, h6 {
- font-family: 'Playfair Display', serif;
- font-weight: 600;
- color: var(--charcoal);
-}
-
-/* ---------- Sidebar (light) ---------- */
+/* --- sidebar --- */
 [data-testid="stSidebar"] {
- background: var(--sidebar-bg);
- border-right: 1px solid hashtag#e5e5e5; /* Border to separate sidebar from main content */
- padding: 1rem; /* Add some padding for better spacing */
+    background-color: var(--bg-sidebar);
+    border-right: 1px solid #e5e7eb;
 }
 .sidebar-card {
- background: hashtag#ffffff;
- color: var(--charcoal);
- border-radius: var(--radius);
- box-shadow: var(--shadow);
- margin-bottom: .6rem;
- transition: .25s;
- font-family: 'Source Serif Pro', serif;
- padding: 1rem; /* Add padding inside cards */
+    background: #ffffff;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: .6rem;
+    transition: .25s;
 }
 .sidebar-card:hover {
- background: var(--gold);
- color: hashtag#ffffff;
- box-shadow: var(--shadow-hover);
- transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-1px);
 }
 
-/* ---------- Chat bubbles (unchanged) ---------- */
+/* --- chat bubbles --- */
 .chat-user, .chat-assistant {
- max-width: 80%;
- padding: .9rem 1.2rem;
- border-radius: var(--radius);
- margin-bottom: .8rem;
- animation: fadeIn .4s ease-in-out;
+    max-width: 80%;
+    padding: .8rem 1.1rem;
+    border-radius: var(--radius);
+    margin-bottom: .7rem;
+    animation: fadeIn .4s ease-in-out;
+    word-wrap: break-word;
 }
 .chat-user {
- background: hashtag#f3f0eb;
- border-left: 4px solid var(--gold);
- margin-left: auto;
+    background: #e6f0fa;
+    border-left: 4px solid var(--brand);
+    margin-left: auto;
 }
 .chat-assistant {
- background: hashtag#ede8e1;
- border-left: 4px solid var(--charcoal);
- margin-right: auto;
+    background: #f6f8fa;
+    border-left: 4px solid var(--accent);
+    margin-right: auto;
 }
 @keyframes fadeIn {
- from {opacity: 0; transform: translateY(8px);}
- to {opacity: 1; transform: translateY(0);}
+    from {opacity: 0; transform: translateY(8px);}
+    to   {opacity: 1; transform: translateY(0);}
 }
 
-/* ---------- Sticky bottom bar (unchanged) ---------- */
+/* --- sticky bottom bar --- */
 .chat-bar {
- position: fixed;
- bottom: 0;
- left: 0;
- right: 0;
- background: var(--ivory);
- border-top: 2px solid var(--gold-soft);
- box-shadow: var(--shadow);
- z-index: 1000;
- padding: .9rem 2.2rem 1.4rem;
- font-family: 'Source Serif Pro', serif;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #ffffff;
+    border-top: 1px solid #e5e7eb;
+    box-shadow: 0 -2px 8px rgba(0,0,0,.05);
+    z-index: 1000;
+    padding: .8rem 2rem 1.2rem;
 }
 .chat-bar textarea {
- border: 2px solid var(--gold);
- border-radius: var(--radius);
- font-size: 1.05rem;
- font-family: 'Source Serif Pro', serif;
+    border: 2px solid var(--brand);
+    border-radius: var(--radius);
+    font-size: 1rem;
 }
 .chat-bar textarea:focus {
- border-color: var(--charcoal);
- box-shadow: 0 0 0 .15rem rgba(191,164,111,.35);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 .15rem rgba(255,215,0,.35);
 }
 .stButton>button {
- border-radius: var(--radius);
- font-family: 'Playfair Display', serif;
- font-weight: 600;
- background: var(--gold);
- color: var(--charcoal);
- border: none;
- transition: .25s;
+    border-radius: var(--radius);
+    font-weight: 600;
+    background: var(--brand);
+    border: none;
+    color: #fff;
+    transition: .25s;
 }
 .stButton>button:hover {
- background: var(--gold-soft);
- transform: translateY(-1px);
+    background: var(--brand-light);
+    transform: translateY(-1px);
 }
 </style>
 """,
     unsafe_allow_html=True,
 )
 
-# ---------- Session State ----------
+# ---------- session ----------
 if "chats" not in st.session_state:
     st.session_state.chats = {}
 if "chat_titles" not in st.session_state:
@@ -634,7 +609,7 @@ if "uploaded_case_text" not in st.session_state:
 if "last_uploaded_file_hash" not in st.session_state:
     st.session_state.last_uploaded_file_hash = None
 
-# ---------- Sidebar ----------
+# ---------- sidebar ----------
 with st.sidebar:
     st.markdown("### 📁 Case Files")
     if st.button("➕ New Case", use_container_width=True):
@@ -652,10 +627,11 @@ with st.sidebar:
             st.session_state.current_chat = cid
             st.rerun()
 
-# ---------- Main Area ----------
-st.title("⚖ PakLaw Judicial Assistant")
+# ---------- header ----------
+st.title("⚖️ PakLaw Judicial Assistant")
 st.caption("Interactive legal assistant for Pakistan’s judicial system.")
 
+# ---------- chat display ----------
 st.markdown("### 📜 Case Discussion & Judgments")
 
 chat_id = st.session_state.current_chat
@@ -673,12 +649,12 @@ with chat_area:
             html = re.sub(r"(?m)^([A-Z][a-z]+):", r"<strong>\1:</strong>", msg["message"])
             html = html.replace("\n", "<br>")
             st.markdown(
-                f'<div class="chat-assistant"><strong>⚖ Assistant:</strong><br>{html}</div>',
+                f'<div class="chat-assistant"><strong>⚖️ Assistant:</strong><br>{html}</div>',
                 unsafe_allow_html=True,
             )
             download_agent.show_download_if_applicable(idx, current_chat, intent_classifier.classify_prompt_intent)
 
-# ---------- Sticky Input ----------
+# ---------- sticky input ----------
 with st.container():
     st.markdown('<div class="chat-bar">', unsafe_allow_html=True)
 
@@ -691,17 +667,13 @@ with st.container():
                 key="user_input",
                 label_visibility="collapsed",
                 height=100,
-                placeholder="Type your legal query here or upload a .txt / .pdf case …"
+                placeholder="Type your legal query here or upload a .txt / .pdf case …",
             )
 
             uploaded_file = st.file_uploader(
                 "📎 Upload Case File (.txt or .pdf)",
                 type=["txt", "pdf"],
                 label_visibility="collapsed",
-            )
-            st.caption(
-                "<small style='color:#666;'>Limit: 10 MB • Max 30 pages • TXT, PDF</small>",
-                unsafe_allow_html=True,
             )
 
             if uploaded_file:
@@ -728,6 +700,7 @@ with st.container():
                                     else:
                                         st.session_state.uploaded_case_text = txt[:10_000]
                                         st.success("✅ PDF processed.")
+
                         except Exception as e:
                             st.error(f"❌ Could not read file: {e}")
 
@@ -736,7 +709,7 @@ with st.container():
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-# ---------- Query Handler ----------
+# ---------- query handler ----------
 if submitted and (user_input or st.session_state.uploaded_case_text):
     query = user_input.strip() or "Generate legal judgment"
     with st.spinner("Processing …"):
@@ -750,12 +723,3 @@ if submitted and (user_input or st.session_state.uploaded_case_text):
 
     st.session_state.chat_titles[chat_id] = generate_chat_title(query) or "Untitled Case"
     st.rerun()
-
-
-
-
-
-
-
-
-
