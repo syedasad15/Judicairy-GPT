@@ -683,7 +683,10 @@ with st.container():
                 type=["txt", "pdf"],
                 label_visibility="collapsed",
             )
-
+            st.caption(
+                "<small style='color:#666;'>Limit: 10 MB • Max 30 pages • TXT, PDF</small>",
+                unsafe_allow_html=True,
+            )
             if uploaded_file:
                 max_mb = 10
                 if uploaded_file.size > max_mb * 1024 * 1024:
@@ -731,6 +734,7 @@ if submitted and (user_input or st.session_state.uploaded_case_text):
 
     st.session_state.chat_titles[chat_id] = generate_chat_title(query) or "Untitled Case"
     st.rerun()
+
 
 
 
