@@ -541,14 +541,15 @@ html, body, .main {
     animation: fadeIn .4s ease-in-out;
     word-wrap: break-word;
 }
+
 .chat-user {
     background: #e6f0fa;
-    border-left: 4px solid var(--brand);
+    border-left: 4px solid var(--accent);
     margin-left: auto;
 }
 .chat-assistant {
     background: #f6f8fa;
-    border-left: 4px solid var(--accent);
+    border-left:4px solid var(--brand) ;
     margin-right: auto;
 }
 @keyframes fadeIn {
@@ -728,4 +729,5 @@ if submitted and (user_input or st.session_state.uploaded_case_text):
 
     st.session_state.chat_titles[chat_id] = generate_chat_title(query) or "Untitled Case"
     st.rerun()
+
 
