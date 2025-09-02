@@ -671,10 +671,20 @@ with st.container():
                 placeholder="Type your legal query here or upload a .txt / .pdf case …",
             )
 
-            st.markdown(
-            "<small style='color: #666;'>Limit: 10MB per file • Max 30 pages • TXT, PDF</small>",
-            unsafe_allow_html=True
-        )
+            col_limit, col_toggle = st.columns([3, 2])
+
+            with col_limit:
+                st.markdown(
+                    "<small style='color: #666;'>Limit: 10MB per file • Max 30 pages • TXT, PDF</small>",
+                    unsafe_allow_html=True
+                )
+            
+            with col_toggle:
+                st.session_state.websearch_enabled = st.toggle(
+                    "Enable Web Search", 
+                    value=st.session_state.websearch_enabled
+                )
+
         
             uploaded_file = st.file_uploader(
                     "📎 Upload Case File (.txt or .pdf)",
@@ -729,6 +739,7 @@ if submitted and (user_input or st.session_state.uploaded_case_text):
 
     st.session_state.chat_titles[chat_id] = generate_chat_title(query) or "Untitled Case"
     st.rerun()
+
 
 
 
