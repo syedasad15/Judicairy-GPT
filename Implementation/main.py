@@ -481,7 +481,8 @@ from Agents.ocrapp import extract_pdf_text_with_vision
 from PyPDF2 import PdfReader
 from io import BytesIO
 import uuid, hashlib, re
-
+if "websearch_enabled" not in st.session_state:
+    st.session_state.websearch_enabled = False
 # ---------- page ----------
 st.set_page_config(
     page_title="PakLaw Judicial Assistant",
@@ -745,6 +746,7 @@ if submitted and (user_input or st.session_state.uploaded_case_text):
 
     st.session_state.chat_titles[chat_id] = generate_chat_title(query) or "Untitled Case"
     st.rerun()
+
 
 
 
