@@ -8,7 +8,8 @@ from Agents import (
     bailiff,
     registrar,
     generic_agent,
-    judgement_agent
+    judgement_agent,
+    websearch
 )
 
 PROMPT_MAP = {
@@ -17,7 +18,7 @@ PROMPT_MAP = {
     "Draft Legal Briefs": judicial_assistant.draft_legal_briefs,
     "Track Legal Updates": judicial_assistant.track_updates,
     "Review Memo": judicial_assistant.prepare_memos,
-
+    "Web Search": websearch.websearch_with_citations, 
     # Clerk
     "Summarize Files": clerk.prepare_case_files,
     "Notify Parties": clerk.notify_parties,
@@ -58,3 +59,4 @@ PROMPT_MAP = {
     "generic": generic_agent.generic_agent,
     "generate_legal_judgment": judgement_agent.generate_legal_judgment
 }
+
